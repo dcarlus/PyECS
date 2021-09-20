@@ -25,17 +25,18 @@ TConcreteComponent = TypeVar('TConcreteComponent', bound=Component)
 class ComponentFactory(Generic[TConcreteComponent]):
     """Factory to generate and destroy Component instances."""
 
-    def __init__(self) -> None:
+    def __init__(self, memberClass: Type[TConcreteComponent]) -> None:
         """Create a new ComponentFactory instance. There should be only one ComponentFactory in a application."""
         self.m_components: List[TConcreteComponent] = []
+        self.m_memberClass = memberClass
 
-    def create(self, memberClass: Type[TConcreteComponent], entity: Entity) -> TConcreteComponent:
+    def create(self, entity: Entity) -> TConcreteComponent:
         """Create a new Component instance and store it in the ComponentFactory."""
-        newComponent: TConcreteComponent = memberClass(entity)
+        newComponent: TConcreteComponent = self.m_memberClass(entity)
         self.m_components.append(newComponent)
         return newComponent
 
-    def delete(self, memberClass: Type[TConcreteComponent], entity: Entity) -> None:
+    def delete(self, entity: Entity) -> None:
         """Delete the Component instances bearing the entity and remove them from the ComponentFactory."""
         self.m_components = [component for component in self.m_components if component.entity() != entity.value()]
 
