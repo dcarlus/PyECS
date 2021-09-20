@@ -11,6 +11,10 @@ class PositionComponent(Component):
         self.m_x: int = 0
         self.m_y: int = 0
 
+    def set(self, x: int, y: int):
+        self.m_x = x
+        self.m_y = y
+
     def setX(self, x: int) -> None:
         """Get the X coordinate of the PositionComponent."""
         self.m_x = x
