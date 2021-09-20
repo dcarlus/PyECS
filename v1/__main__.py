@@ -1,6 +1,5 @@
 from CustomComponentsModule import PositionComponent
-from ComponentsModule import ComponentFactory, Component
-from EntitiesModule import EntityFactory, Entity
+from EntitiesModule import Entity
 from WorldModule import World
 
 world: World = World()
