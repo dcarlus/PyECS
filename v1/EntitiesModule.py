@@ -14,10 +14,12 @@ class Entity:
         """Destruction of the ID instance."""
         self.m_value = None
 
+    @property
     def isValid(self) -> bool:
         """Check if the ID is valid (ie. with a defined value) or not (None)."""
         return self.m_value is not None
 
+    @property
     def value(self) -> int:
         """Get the value of an ID."""
         return self.m_value
@@ -35,12 +37,12 @@ class Entity:
             return Entity(Entity.AvailableIDs.pop())
 
     @staticmethod
-    def Free(id: 'Entity') -> None:
+    def Free(entity: 'Entity') -> None:
         """Free an ID by keeping its value in AvailableIDs and setting it to
         None, making it invalid."""
-        if not id.m_value in Entity.AvailableIDs:
-            Entity.AvailableIDs.add(id.m_value)
-            id.m_value = None;
+        if not entity.m_value in Entity.AvailableIDs:
+            Entity.AvailableIDs.add(entity.m_value)
+            entity.m_value = None
         else:
             raise ValueError("ID already used! {}".format(Entity.AvailableIDs))
 
@@ -68,14 +70,14 @@ class EntityFactory:
     def create(self) -> Entity:
         """Create a new Entity instance and store it in the EntityFactory."""
         newEntity: Entity = Entity.Generate()
-        self.m_entities.append(newEntity.value())
+        self.m_entities.append(newEntity.value)
         self.m_entities.sort()
         return newEntity
 
     def delete(self, entity: Entity) -> None:
         """Delete an Entity instance and remove it from the EntityFactory."""
         try:
-            self.m_entities.remove(entity.value())
+            self.m_entities.remove(entity.value)
             Entity.Free(entity)
         except:
             return

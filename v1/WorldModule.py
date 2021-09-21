@@ -4,6 +4,8 @@ from CustomComponentsModule import *
 
 
 class World:
+    """Entry class for using the ECS instances. Handles interactions between these instances as automatic data
+    suppression. For example, it removes all the components attached to an entity when this one is deleted."""
 
     def __init__(self):
         """Create a new World instance."""

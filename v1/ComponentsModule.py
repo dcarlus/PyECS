@@ -9,12 +9,13 @@ class Component:
         """Create a new Component instance."""
         self.m_entity: Entity = entity
 
+    @property
     def entity(self) -> int:
-        return self.m_entity.value()
+        return self.m_entity.value
 
     def hasValidEntity(self) -> bool:
         """Check if the Entity owning the Component is valid."""
-        return self.m_entity.isValid()
+        return self.m_entity.isValid
 
     def __str__(self):
         return '{} {}'.format(__class__, str(self.m_entity))
@@ -38,7 +39,7 @@ class ComponentFactory(Generic[TConcreteComponent]):
 
     def delete(self, entity: Entity) -> None:
         """Delete the Component instances bearing the entity and remove them from the ComponentFactory."""
-        self.m_components = [component for component in self.m_components if component.entity() != entity.value()]
+        self.m_components = [component for component in self.m_components if component.entity != entity.value]
 
     def debug(self) -> None:
         """Show the content of the ComponentFactory in a terminal."""
