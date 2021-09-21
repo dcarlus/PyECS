@@ -27,7 +27,8 @@ class ComponentFactory(Generic[TConcreteComponent]):
     """Factory to generate and destroy Component instances."""
 
     def __init__(self, memberClass: Type[TConcreteComponent]) -> None:
-        """Create a new ComponentFactory instance. There should be only one ComponentFactory in a application."""
+        """Create a new ComponentFactory instance.
+         There should be only one ComponentFactory in a application."""
         self.m_components: List[TConcreteComponent] = []
         self.m_memberClass = memberClass
 
@@ -43,6 +44,15 @@ class ComponentFactory(Generic[TConcreteComponent]):
 
     def debug(self) -> None:
         """Show the content of the ComponentFactory in a terminal."""
-        print("Debug <{}>Factory: it contains {} components:".format(TConcreteComponent.__name__, len(self.m_components)))
+        print("Debug <{}>Factory: it contains {} components:".format(
+                TConcreteComponent.__name__,
+                len(self.m_components)
+            )
+        )
         for component in self.m_components:
-            print('{} = {}'.format(TConcreteComponent.__name__, component))
+            print('{} = {} attached to {}'.format(
+                    TConcreteComponent.__name__,
+                    component,
+                    component.entity
+                )
+            )

@@ -18,8 +18,17 @@ posCompo2.y = 4
 posCompo3: PositionComponent = world.createComponent(PositionComponent, entity1)
 posCompo3.x = 3
 posCompo3.y = 5
+posCompo4: PositionComponent = world.createComponent(PositionComponent, entity1)
+posCompo4.x = 8
+posCompo4.y = 6
 
+print('End setup world data...')
 world.debug()
-print()
-world.delete(entity0)
+
+print('Remove:', entity1)
+world.delete(entity1)
+world.debug()
+
+print('Clear now...')
+world.clear()
 world.debug()

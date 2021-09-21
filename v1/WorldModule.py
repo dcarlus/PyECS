@@ -10,11 +10,23 @@ class World:
     def __init__(self):
         """Create a new World instance."""
         self.m_entities: EntityFactory = EntityFactory()
+        self.m_entityList = []
         self.m_components = {}
+
+    def __del__(self):
+        """Clear data on World destruction."""
+        self.clear()
+
+    def clear(self):
+        """Clear all data of the current World."""
+        while len(self.m_entityList) > 0:
+            self.delete(self.m_entityList[0])
 
     def createEntity(self) -> Entity:
         """Create an Entity instance."""
-        return self.m_entities.create()
+        newEntity: Entity = self.m_entities.create()
+        self.m_entityList.append(newEntity)
+        return newEntity
 
     def createComponent(self, componentClass, entity: Entity) -> TConcreteComponent:
         """Create a Component for the given class."""
@@ -27,6 +39,11 @@ class World:
         for key in self.m_components:
             self.m_components[key].delete(entity)
         self.m_entities.delete(entity)
+
+        try:
+            self.m_entityList.remove(entity)
+        except:
+            pass
 
     def debug(self):
         """Debug the World instance."""

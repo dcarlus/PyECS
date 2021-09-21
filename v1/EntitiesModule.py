@@ -84,4 +84,4 @@ class EntityFactory:
 
     def debug(self) -> None:
         """Show the content of the EntityFactory in a terminal."""
-        print("Debug EntityFactory:\n{}".format(self.m_entities))
+        print("Debug EntityFactory: {}".format(self.m_entities))
