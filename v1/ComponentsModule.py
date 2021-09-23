@@ -38,20 +38,28 @@ class ComponentFactory(Generic[TConcreteComponent]):
         self.m_components.append(newComponent)
         return newComponent
 
+    def allComponents(self):
+        """Get all the Components from all Entities."""
+        return self.m_components
+
+    def components(self, entity: Entity) -> [TConcreteComponent]:
+        """Get all the Components attached to an Entity."""
+        return [component for component in self.m_components if component.entity == entity.value]
+
     def delete(self, entity: Entity) -> None:
         """Delete the Component instances bearing the entity and remove them from the ComponentFactory."""
         self.m_components = [component for component in self.m_components if component.entity != entity.value]
 
     def debug(self) -> None:
         """Show the content of the ComponentFactory in a terminal."""
-        print("Debug <{}>Factory: it contains {} components:".format(
-                TConcreteComponent.__name__,
+        print("Debug {}Factory: it contains {} components:".format(
+                self.m_memberClass.__name__,
                 len(self.m_components)
             )
         )
         for component in self.m_components:
             print('{} = {} attached to {}'.format(
-                    TConcreteComponent.__name__,
+                    self.m_memberClass.__name__,
                     component,
                     component.entity
                 )

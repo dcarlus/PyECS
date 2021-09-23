@@ -1,6 +1,5 @@
-from EntitiesModule import *
-from ComponentsModule import *
-from CustomComponentsModule import *
+from EntitiesModule import Entity, EntityFactory
+from SystemsModule import System, Type, TConcreteComponent, TConcreteSystemProcessing
 
 
 class World:
@@ -11,7 +10,7 @@ class World:
         """Create a new World instance."""
         self.m_entities: EntityFactory = EntityFactory()
         self.m_entityList = []
-        self.m_components = {}
+        self.m_systems = {}
 
     def __del__(self):
         """Clear data on World destruction."""
@@ -28,16 +27,21 @@ class World:
         self.m_entityList.append(newEntity)
         return newEntity
 
-    def createComponent(self, componentClass, entity: Entity) -> TConcreteComponent:
-        """Create a Component for the given class."""
-        if not self.m_components.__contains__(componentClass):
-            self.m_components[componentClass] = ComponentFactory(componentClass)
-        return self.m_components[componentClass].create(entity)
+    def system(
+        self,
+        componentClass: Type[TConcreteComponent],
+        processingClass: Type[TConcreteSystemProcessing],
+        name: str
+    ) -> System:
+        """Get a System by its name."""
+        if not self.m_systems.__contains__(name):
+            self.m_systems[name] = System(componentClass, processingClass)
+        return self.m_systems[name]
 
     def delete(self, entity: Entity) -> None:
         """Delete an Entity and all its attached Components."""
-        for key in self.m_components:
-            self.m_components[key].delete(entity)
+        for name in self.m_systems:
+            self.m_systems[name].delete(entity)
         self.m_entities.delete(entity)
 
         try:
@@ -45,8 +49,13 @@ class World:
         except:
             pass
 
-    def debug(self):
+    def run(self):
+        """Run all the registered Systems in the World."""
+        for name in self.m_systems:
+            self.m_systems[name].process()
+
+    def debug(self) -> None:
         """Debug the World instance."""
         self.m_entities.debug()
-        for key in self.m_components:
-            self.m_components[key].debug()
+        for name in self.m_systems:
+            self.m_systems[name].debug()
