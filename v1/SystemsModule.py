@@ -1,4 +1,4 @@
-from ComponentsModule import ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
+from ComponentsModule import Component, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
 from termcolor import colored
 
 
@@ -9,7 +9,7 @@ class SystemProcessing:
         """Create a new SystemProcessing instance."""
         self.m_components = components
 
-    def run(self) -> None:
+    def run(self, linkedSystems: []) -> None:
         """Perform the Components processing."""
         return
 
@@ -20,11 +20,14 @@ class System(Generic[TConcreteComponent]):
 
     def __init__(
         self,
+        name: str,
         componentClass: Type[TConcreteComponent],
         processingClass: Type[TConcreteComponent]
     ):
         """Create a new System instance."""
+        self.m_name = name
         self.m_memberClass = componentClass
+        self.m_linkedSystems: {str, System} = {}
         self.m_components = ComponentFactory(componentClass)
         self.m_processing = processingClass(self.m_components)
 
@@ -36,9 +39,28 @@ class System(Generic[TConcreteComponent]):
         """Delete the component(s) attached to an Entity."""
         self.m_components.delete(entity)
 
+    def link(self, linkedSystem) -> None:
+        name: str = linkedSystem.name
+        self.m_linkedSystems[name] = linkedSystem
+
+    def unlink(self, system):
+        name: str = system.name
+
+        if self.m_linkedSystems.__contains__(name):
+            self.m_linkedSystems.pop(name)
+
+    def components(self) -> [Component]:
+        """Get all the components managed by the current System."""
+        return self.m_components.allComponents()
+
     def process(self) -> None:
         """Run the Components processing."""
-        self.m_processing.run()
+        self.m_processing.run(self.m_linkedSystems)
+
+    @property
+    def name(self):
+        """Get the name of the System."""
+        return self.m_name
 
     def debug(self) -> None:
         """Debug the System instance."""
