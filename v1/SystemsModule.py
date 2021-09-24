@@ -1,4 +1,5 @@
 from ComponentsModule import ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
+from termcolor import colored
 
 
 class SystemProcessing:
@@ -41,5 +42,5 @@ class System(Generic[TConcreteComponent]):
 
     def debug(self) -> None:
         """Debug the System instance."""
-        print("Debug {}System".format(self.m_memberClass.__name__))
+        print(colored("[Debug] {}System".format(self.m_memberClass.__name__), 'magenta'))
         self.m_components.debug()

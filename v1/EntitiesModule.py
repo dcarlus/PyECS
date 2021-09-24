@@ -1,3 +1,6 @@
+from termcolor import colored
+
+
 class Entity:
     """Obscur ID type for an Entity."""
 
@@ -84,4 +87,4 @@ class EntityFactory:
 
     def debug(self) -> None:
         """Show the content of the EntityFactory in a terminal."""
-        print("Debug EntityFactory: {}".format(self.m_entities))
+        print(colored("[Debug] EntityFactory: {}".format(self.m_entities), 'green'))

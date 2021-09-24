@@ -1,5 +1,6 @@
 from typing import TypeVar, Generic, List, Type
 from EntitiesModule import Entity
+from termcolor import colored
 
 
 class Component:
@@ -52,15 +53,16 @@ class ComponentFactory(Generic[TConcreteComponent]):
 
     def debug(self) -> None:
         """Show the content of the ComponentFactory in a terminal."""
-        print("Debug {}Factory: it contains {} components:".format(
+        print(colored("[Debug] {}Factory: it contains {} components".format(
                 self.m_memberClass.__name__,
                 len(self.m_components)
-            )
+            ), 'cyan')
         )
+
         for component in self.m_components:
-            print('{} = {} attached to {}'.format(
+            print(colored('{} = {} attached to {}'.format(
                     self.m_memberClass.__name__,
                     component,
                     component.entity
-                )
+                ), 'cyan')
             )
