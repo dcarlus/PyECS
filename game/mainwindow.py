@@ -8,7 +8,7 @@ class MainWindow:
         width: int = 800,
         height: int = 600,
         caption: str = "New window",
-        icon: pygame.Surface = None
+        iconPath: str = ''
     ):
         """Create a new MainWindow instance."""
         pygame.init()
@@ -17,7 +17,8 @@ class MainWindow:
         self.m_framerate: int = 60
         self.m_clock: pygame.time = pygame.time.Clock()
 
-        if icon is not None:
+        if len(iconPath) > 0:
+            icon: pygame.Surface = pygame.image.load(iconPath)
             pygame.display.set_icon(icon)
 
     @staticmethod
