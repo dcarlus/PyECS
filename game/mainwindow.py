@@ -28,10 +28,12 @@ class MainWindow:
 
     @property
     def framerate(self) -> int:
+        """Get the framerate of the application."""
         return self.m_framerate
 
     @framerate.setter
     def framerate(self, framerate: int) -> None:
+        """Set the framerate of the application. Default is 60 FPS."""
         self.m_framerate = min(max(0, framerate), 360)
 
     def resize(self, width: int, height: int) -> None:

@@ -5,6 +5,7 @@ from ecs.world import World
 
 
 window: MainWindow = MainWindow(800, 600, 'Crystal Shot')
+window.framerate = 75
 world: World = cshot.get_world()
 
 running: bool = True
