@@ -1,5 +1,5 @@
-from ComponentsModule import Component, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
 from termcolor import colored
+from ecs.components import Component, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
 
 
 class SystemProcessing:
@@ -16,7 +16,7 @@ class SystemProcessing:
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)
 
 class System(Generic[TConcreteComponent]):
-    """Base class for defining a System of the ECS architecture."""
+    """Base class for defining a System of the ecs architecture."""
 
     def __init__(
         self,

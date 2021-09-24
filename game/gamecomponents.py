@@ -1,9 +1,10 @@
 # Module containing user defined components and system processing.
 # Here some demonstration components and system processing for a 2D video game using pygame.
-from ComponentsModule import Component, ComponentFactory
-from EntitiesModule import Entity
-from SystemsModule import SystemProcessing, System
+from ecs.components import Component, ComponentFactory
+from ecs.entities import Entity
+from ecs.systems import SystemProcessing, System
 import pygame
+import cshot
 
 
 # POSITION
@@ -47,22 +48,6 @@ class PositionProcessing(SystemProcessing):
     def __init__(self, components: ComponentFactory):
         """Create a new PositionProcessing instance."""
         super().__init__(components)
-
-    def run(self, linkedSystems: [System]) -> None:
-        """Perform the Components processing."""
-        componentsList: [Component] = self.m_components.allComponents()
-
-        for component in componentsList:
-            if not component.hasValidEntity():
-                continue
-
-            print("Run process on position ({},{}) for {}".format(
-                    component.x,
-                    component.y,
-                    component.entity,
-                    linkedSystems
-                )
-            )
 
 
 # INPUTS
@@ -112,7 +97,7 @@ class InputProcessing(SystemProcessing):
         """Perform the Components processing."""
         inputComponentsList: [Component] = self.m_components.allComponents()
 
-        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == 'Position')
+        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == cshot.PositionSystemName)
         positionComponentsList: [Component] = linkedSystems[positionSystemName].components()
 
         for inputComponent in inputComponentsList:
@@ -126,17 +111,19 @@ class InputProcessing(SystemProcessing):
 
             pressedKey: pygame.constants = pygame.key.get_pressed()
 
-            print("Run process inputs {} on {}".format(inputComponent, positionComponent))
-
             # Logic with the keys.
-            if pressedKey[pygame.K_UP] and inputComponent.keys.hasKet(pygame.K_UP):
+            if pressedKey[pygame.K_UP] and inputComponent.hasKey(pygame.K_UP):
                 positionComponent.x = positionComponent.x - 1
+                print("Up pressed: {}".format(positionComponent))
 
-            if pressedKey[pygame.K_DOWN] and inputComponent.keys.hasKet(pygame.K_DOWN):
+            if pressedKey[pygame.K_DOWN] and inputComponent.hasKey(pygame.K_DOWN):
                 positionComponent.x = positionComponent.x + 1
+                print("Down pressed: {}".format(positionComponent))
 
-            if pressedKey[pygame.K_LEFT] and inputComponent.keys.hasKet(pygame.K_LEFT):
+            if pressedKey[pygame.K_LEFT] and inputComponent.hasKey(pygame.K_LEFT):
                 positionComponent.y = positionComponent.y - 1
+                print("Left pressed: {}".format(positionComponent))
 
-            if pressedKey[pygame.K_RIGHT] and inputComponent.keys.hasKet(pygame.K_RIGHT):
+            if pressedKey[pygame.K_RIGHT] and inputComponent.hasKey(pygame.K_RIGHT):
                 positionComponent.y = positionComponent.y + 1
+                print("Right pressed: {}".format(positionComponent))
