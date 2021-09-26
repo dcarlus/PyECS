@@ -3,6 +3,10 @@ from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 from game.appdata import SystemName
+from engine.graphics.direction import Direction
+from engine.graphics.geometry import Point
+from .positioncomponent import PositionComponent
+from .spritecomponent import SpriteComponent
 
 
 class InputComponent(Component):
@@ -46,45 +50,65 @@ class InputProcessing(SystemProcessing):
     def __init__(self, components: ComponentFactory):
         """Create a new InputProcessing instance."""
         super().__init__(components)
+        self.m_frameCounter: int = 0
 
     def run(self, linkedSystems: [System]) -> None:
         """Perform the Components processing."""
+        self.m_frameCounter = self.m_frameCounter + 1
         inputComponentsList: [Component] = self.m_components.allComponents()
 
-        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == SystemName.position())
-        positionComponentsList: [Component] = linkedSystems[positionSystemName].components()
+        positionSystem: System = linkedSystems[SystemName.position()]
+        spriteSystem: System = linkedSystems[SystemName.sprite()]
 
         for inputComponent in inputComponentsList:
             entity: Entity = inputComponent.entity
 
-            # Look for the position component attached to the same Entity (only one is allowed per Entity).
-            positionComponent: Component = next(c for c in positionComponentsList if c.entity == entity)
+            # Look for the position and sprite components attached to the same Entity (only one is allowed per Entity).
+            positionComponent: PositionComponent = positionSystem.componentFor(entity)
+            spriteComponent: SpriteComponent = spriteSystem.componentFor(entity)
 
-            if positionComponent is None:
+            if positionComponent is None or spriteComponent is None:
                 continue
 
-            InputProcessing.processKeys(inputComponent, positionComponent)
+            needAnimation: bool = InputProcessing.processKeys(inputComponent, positionComponent, spriteComponent)
+
+            if needAnimation and (self.m_frameCounter % 10) == 0:
+                spriteComponent.sprite.nextSprite()
 
     @staticmethod
     def processKeys(
-        inputComponent: Component,
-        positionComponent: Component
-    ) -> None:
+        inputComponent: InputComponent,
+        positionComponent: PositionComponent,
+        spriteComponent: SpriteComponent
+    ) -> bool:
         """Key processing itself with their own logic."""
+        # Todo: create a CharacterProperties component?
+        characterSpeed: int = 2
+
+        needAnimation: bool = False
         pressedKey: pygame.constants = pygame.key.get_pressed()
+        spriteDirection: Direction = None
 
         if pressedKey[pygame.K_UP] and inputComponent.hasKey(pygame.K_UP):
-            positionComponent.x = positionComponent.x - 1
-            print("Up pressed: {}".format(positionComponent))
+            positionComponent.y = positionComponent.y - characterSpeed
+            spriteDirection = Direction.UP
 
         if pressedKey[pygame.K_DOWN] and inputComponent.hasKey(pygame.K_DOWN):
-            positionComponent.x = positionComponent.x + 1
-            print("Down pressed: {}".format(positionComponent))
+            positionComponent.y = positionComponent.y + characterSpeed
+            spriteDirection = Direction.DOWN
 
         if pressedKey[pygame.K_LEFT] and inputComponent.hasKey(pygame.K_LEFT):
-            positionComponent.y = positionComponent.y - 1
-            print("Left pressed: {}".format(positionComponent))
+            positionComponent.x = positionComponent.x - characterSpeed
+            spriteDirection = Direction.LEFT
 
         if pressedKey[pygame.K_RIGHT] and inputComponent.hasKey(pygame.K_RIGHT):
-            positionComponent.y = positionComponent.y + 1
-            print("Right pressed: {}".format(positionComponent))
+            positionComponent.x = positionComponent.x + characterSpeed
+            spriteDirection = Direction.RIGHT
+
+        if spriteDirection is not None:
+            needAnimation = True
+            spriteComponent.sprite.changeDirection(spriteDirection)
+            spriteComponent.sprite.position = Point(positionComponent.x, positionComponent.y)
+            spriteComponent.sprite.update()
+
+        return needAnimation

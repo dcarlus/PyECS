@@ -11,9 +11,10 @@ from game.appdata import SystemName, AnimationName
 class CrystalShot(Game):
     """Configuration of the game engine for the Crystal Shot game."""
 
-    def __init__(self) -> None:
+    def __init__(self, framerate: int) -> None:
         """Initialize the Game."""
         super().__init__()
+        pygame.key.set_repeat(int((1./framerate) * 1000))
         self.__setupWorld()
 
     def __setupWorld(self):
@@ -62,13 +63,13 @@ class CrystalShot(Game):
     def __createSpriteComponents(self):
         """Create the SpriteComponents."""
         SpriteWidth: int = 64
-        SpriteHeight: int = 72
+        SpriteHeight: int = 64
         AmountSprites: int = 9
         WalkAnimationDirections: {Direction, int} = {
-            Direction.UP: 9,
-            Direction.LEFT: 10,
-            Direction.DOWN: 11,
-            Direction.RIGHT: 12
+            Direction.UP: 8,
+            Direction.LEFT: 9,
+            Direction.DOWN: 10,
+            Direction.RIGHT: 11
         }
 
         spriteSystem: System = self.m_world.system(SystemName.sprite())

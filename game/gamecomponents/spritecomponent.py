@@ -41,7 +41,6 @@ class SpriteProcessing(SystemProcessing):
             sprite.update()
 
             if sprite.ready and not self.m_spriteGroup.has(sprite):
-                print('Add a sprite to the display group!')
                 self.m_spriteGroup.add(sprite)
 
     def post(self, linkedSystems: []) -> None:

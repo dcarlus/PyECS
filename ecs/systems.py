@@ -9,15 +9,15 @@ class SystemProcessing:
         """Create a new SystemProcessing instance."""
         self.m_components = components
 
-    def pre(self, linkedSystems: []) -> None:
+    def pre(self, linkedSystems: {str, 'System'}) -> None:
         """Prepare work before run."""
         return
 
-    def run(self, linkedSystems: []) -> None:
+    def run(self, linkedSystems: {str, 'System'}) -> None:
         """Perform the Components processing."""
         return
 
-    def post(self, linkedSystems: []) -> None:
+    def post(self, linkedSystems: {str, 'System'}) -> None:
         """Do something after processing."""
         return
 
@@ -69,8 +69,26 @@ class System(Generic[TConcreteComponent]):
             self.m_linkedSystems.pop(name)
 
     def components(self) -> [Component]:
-        """Get all the components managed by the current System."""
+        """Get all the Components managed by the current System."""
         return self.m_components.allComponents()
+
+    def componentFor(self, entity: Entity) -> Component:
+        """Get the first Component found for the given entity."""
+        try:
+            return next(c for c in self.components() if c.entity == entity)
+        except:
+            return None
+
+    def allComponentsFor(self, entity: Entity) -> [Component]:
+        """Get the Components found for the given entity."""
+        foundComponents: [Component] = []
+        listComponents: [Component] = self.m_components.allComponents()
+
+        for component in listComponents:
+            if component.entity == entity:
+                foundComponents.append(component)
+
+        return foundComponents
 
     def preprocess(self) -> None:
         """Run the Components preprocessing."""

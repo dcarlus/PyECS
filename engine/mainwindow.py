@@ -15,10 +15,25 @@ class MainWindow:
         pygame.display.set_caption(caption)
         self.m_framerate: int = 60
         self.m_clock: pygame.time = pygame.time.Clock()
+        self.m_clearColor: (int, int, int) = (0, 0, 0)
 
         if len(iconPath) > 0:
             icon: pygame.Surface = pygame.image.load(iconPath)
             pygame.display.set_icon(icon)
+
+    def clear(self) -> None:
+        """Clear the content of the MainWindow with the clear color."""
+        self.m_surface.fill(self.m_clearColor)
+
+    @property
+    def clearColor(self) -> (int, int, int):
+        """Get the clear color (r, g, b) when erasing the content of the MaiWindow."""
+        return self.m_clearColor
+
+    @clearColor.setter
+    def clearColor(self, color: (int, int, int)) -> None:
+        """Set the clear color (r, g, b) when erasing the content of the MaiWindow."""
+        self.m_clearColor = color
 
     @staticmethod
     def end() -> None:

@@ -4,7 +4,11 @@ from game.appdata import AppData
 from game.crystalshot import CrystalShot
 
 if __name__ == '__main__':
-    csGame: CrystalShot = CrystalShot()
+    framerate: int = 60
+    csGame: CrystalShot = CrystalShot(framerate)
+    AppData.window().framerate = framerate
+    AppData.window().clearColor = (0, 0, 0)
+
     running: bool = True
 
     while running:
@@ -14,6 +18,7 @@ if __name__ == '__main__':
             elif event.type == pygame.VIDEORESIZE:
                 AppData.window().resize(event.size[0], event.size[1])
 
+            AppData.window().clear()
             csGame.world.run()
             AppData.window().update()
 

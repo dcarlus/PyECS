@@ -13,5 +13,5 @@ class Direction(Enum):
     DOWN_RIGHT = DOWN | RIGHT
 
     @classmethod
-    def contains(cls, value):
-        return value in cls._value2member_map_
+    def contains(cls, direction: 'Direction'):
+        return direction.value in cls._value2member_map_

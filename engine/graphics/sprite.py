@@ -120,6 +120,8 @@ class Sprite(pygame.sprite.Sprite):
         xSheet = self.m_currentAnimation.xPosition
         ySheet = self.m_currentAnimation.yPosition(self.m_spriteHeight)
         Destination: (int, int) = (0, 0)
+
+        self.image.fill(self.m_colorKey)
         self.image.blit(
             self.m_sheet,
             Destination,
@@ -127,17 +129,16 @@ class Sprite(pygame.sprite.Sprite):
         )
 
         self.image.set_colorkey(self.m_colorKey)
-        self.rect = self.image.get_rect()
 
     @property
     def position(self) -> Point:
         """Get the current position of the Sprite (in the 2D game world)."""
-        return Point(self.m_currentSpriteRect.x, self.m_currentSpriteRect.y)
+        return Point(self.rect.x, self.rect.y)
 
     @position.setter
     def position(self, position: Point) -> None:
         """Set the position of the Sprite (in the 2D game world)."""
-        self.m_currentSpriteRect.topleft = self.position.asTuple()
+        self.rect.topleft = position.asTuple()
 
     @property
     def ready(self) -> bool:
