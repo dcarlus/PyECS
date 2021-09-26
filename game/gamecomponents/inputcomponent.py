@@ -2,7 +2,7 @@ import pygame
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
-from .componentnaming import PositionSystemName
+from game.appdata import SystemName
 
 
 class InputComponent(Component):
@@ -51,7 +51,7 @@ class InputProcessing(SystemProcessing):
         """Perform the Components processing."""
         inputComponentsList: [Component] = self.m_components.allComponents()
 
-        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == PositionSystemName)
+        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == SystemName.position())
         positionComponentsList: [Component] = linkedSystems[positionSystemName].components()
 
         for inputComponent in inputComponentsList:

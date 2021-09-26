@@ -15,7 +15,7 @@ class Animation:
         """Create a new Animation instance."""
         realYPositions: {Direction, int} = {}
 
-        for dir, y in yPositions:
+        for dir, y in yPositions.items():
             if Direction.contains(dir) and y >= 0:
                 realYPositions[dir] = y
 
@@ -44,11 +44,10 @@ class Animation:
         if Direction.contains(direction) and self.m_yPositions.__contains__(direction):
             self.m_currentDirection = direction
 
-    @property
-    def yPosition(self,) -> int:
+    def yPosition(self, height: int) -> int:
         """Get the Y position of the Animation in the sprite sheet for a given Direction."""
         if self.m_yPositions.__contains__(self.m_currentDirection):
-            return self.m_yPositions[self.m_currentDirection]
+            return self.m_yPositions[self.m_currentDirection] * height
         return 0
 
     @property
@@ -111,8 +110,11 @@ class Sprite(pygame.sprite.Sprite):
     @property
     def current(self) -> pygame.image:
         """Get the sprite to be rendered in the current Animation."""
+        if self.m_currentAnimation is None:
+            return None
+
         xSheet = self.m_currentAnimation.xPosition
-        ySheet = self.m_currentAnimation.yPosition
+        ySheet = self.m_currentAnimation.yPosition(self.m_spriteHeight)
         spriteImage: pygame.Surface = pygame.Surface([self.m_spriteWidth, self.m_spriteHeight])
         Destination: (int, int) = (0, 0)
         spriteImage.blit(

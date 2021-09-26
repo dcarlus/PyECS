@@ -3,7 +3,7 @@ from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 from engine.graphics.sprite import Sprite
-
+from game.appdata import AppData
 
 class SpriteComponent(Component):
     """Component containing the graphics elements for drawing an animated item (character, monster, other)."""
@@ -38,11 +38,15 @@ class SpriteProcessing(SystemProcessing):
 
         for spriteComponent in spriteComponentsList:
             sprite: Sprite = spriteComponent.sprite
+            pygameSprite = sprite.current
 
-            if not self.m_sprites.has(sprite):
-                self.m_sprites.add(sprite)
+            if pygameSprite is not None and not self.m_sprites.has(sprite):
+                self.m_sprites.add(pygameSprite)
 
     def post(self, linkedSystems: []) -> None:
         """Do something after processing."""
         self.m_sprites.update()
-        # self.m_sprites.draw() # Need the screen surface to draw on.
+
+        AppData.wantAccess()
+        self.m_sprites.draw(AppData.window().surface)
+        AppData.releaseAccess()

@@ -30,12 +30,13 @@ class World:
     def system(
         self,
         name: str,
-        componentClass: Type[TConcreteComponent],
-        processingClass: Type[TConcreteSystemProcessing]
+        componentClass: Type[TConcreteComponent] = None,
+        processingClass: Type[TConcreteSystemProcessing] = None
     ) -> System:
         """Get a System by its name."""
         if not self.m_systems.__contains__(name):
-            self.m_systems[name] = System(name, componentClass, processingClass)
+            if componentClass is not None and processingClass is not None:
+                self.m_systems[name] = System(name, componentClass, processingClass)
         return self.m_systems[name]
 
     def delete(self, entity: Entity) -> None:

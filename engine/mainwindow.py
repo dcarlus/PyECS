@@ -11,7 +11,6 @@ class MainWindow:
         iconPath: str = ''
     ):
         """Create a new MainWindow instance."""
-        pygame.init()
         self.m_surface = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         pygame.display.set_caption(caption)
         self.m_framerate: int = 60
