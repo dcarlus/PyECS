@@ -30,7 +30,7 @@ class SpriteProcessing(SystemProcessing):
     def __init__(self, components: ComponentFactory):
         """Create a new SpriteProcessing instance."""
         super().__init__(components)
-        self.m_sprites = pygame.sprite.Group()
+        self.m_spriteGroup = pygame.sprite.Group()
 
     def run(self, linkedSystems: [System]) -> None:
         """Perform the Components processing."""
@@ -38,15 +38,16 @@ class SpriteProcessing(SystemProcessing):
 
         for spriteComponent in spriteComponentsList:
             sprite: Sprite = spriteComponent.sprite
-            pygameSprite = sprite.current
+            sprite.update()
 
-            if pygameSprite is not None and not self.m_sprites.has(sprite):
-                self.m_sprites.add(pygameSprite)
+            if sprite.ready and not self.m_spriteGroup.has(sprite):
+                print('Add a sprite to the display group!')
+                self.m_spriteGroup.add(sprite)
 
     def post(self, linkedSystems: []) -> None:
         """Do something after processing."""
-        self.m_sprites.update()
+        self.m_spriteGroup.update()
 
         AppData.wantAccess()
-        self.m_sprites.draw(AppData.window().surface)
+        self.m_spriteGroup.draw(AppData.window().surface)
         AppData.releaseAccess()
