@@ -1,12 +1,10 @@
 import pygame
-from gamecomponents import PositionComponent, PositionProcessing, InputComponent, InputProcessing
 from ecs.entities import Entity
 from ecs.systems import System
 from ecs.world import World
-
-
-PositionSystemName: str = 'Position'
-InputSystemName: str = 'Input'
+from gamecomponents.componentnaming import PositionSystemName, InputSystemName
+from gamecomponents.positioncomponent import PositionComponent, PositionProcessing
+from gamecomponents.inputcomponent import InputComponent, InputProcessing
 
 
 def get_world() -> World:

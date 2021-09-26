@@ -1,56 +1,10 @@
-# Module containing user defined components and system processing.
-# Here some demonstration components and system processing for a 2D video game using pygame.
-from ecs.components import Component, ComponentQuantity, ComponentFactory
+from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 import pygame
-import cshot
+from .componentnaming import PositionSystemName
 
 
-# POSITION
-class PositionComponent(Component):
-    """Component for setting the 2D position of an object."""
-
-    def __init__(self, entity: Entity) -> None:
-        """Create a new PositionComponent instance."""
-        super().__init__(entity)
-        self.m_x: int = 0
-        self.m_y: int = 0
-
-    @property
-    def x(self) -> int:
-        """Get the X coordinate of the PositionComponent."""
-        return self.m_x
-
-    @property
-    def y(self) -> int:
-        """Get the Y coordinate of the PositionComponent."""
-        return self.m_y
-
-    @x.setter
-    def x(self, x: int) -> None:
-        """Get the X coordinate of the PositionComponent."""
-        self.m_x = x
-
-    @y.setter
-    def y(self, y: int) -> None:
-        """Get the Y coordinate of the PositionComponent."""
-        self.m_y = y
-
-    def __str__(self):
-        """Return a string for representing the PositionComponent."""
-        return '({}, {})'.format(self.m_x, self.m_y)
-
-
-class PositionProcessing(SystemProcessing):
-    """System processing of PositionComponents."""
-
-    def __init__(self, components: ComponentFactory):
-        """Create a new PositionProcessing instance."""
-        super().__init__(components)
-
-
-# INPUTS
 class InputComponent(Component):
     """Component for setting the inputs (keyboard, mouse, controller, ...) applied on an Entity."""
 
@@ -97,7 +51,7 @@ class InputProcessing(SystemProcessing):
         """Perform the Components processing."""
         inputComponentsList: [Component] = self.m_components.allComponents()
 
-        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == cshot.PositionSystemName)
+        positionSystemName: str = next(s for s in linkedSystems if linkedSystems[s].name == PositionSystemName)
         positionComponentsList: [Component] = linkedSystems[positionSystemName].components()
 
         for inputComponent in inputComponentsList:
