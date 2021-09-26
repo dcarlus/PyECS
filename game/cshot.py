@@ -10,7 +10,7 @@ from game.graphics.sprite import Sprite
 from game.graphics import direction, geometry
 
 
-def get_world() -> World:
+def getWorld() -> World:
     """Setup the game ECS World."""
     world: World = World()
     entity0: Entity = world.createEntity()
@@ -20,6 +20,7 @@ def get_world() -> World:
     inputSystem: System = world.system(names.InputSystemName, InputComponent, InputProcessing)
     spriteSystem: System = world.system(names.SpriteSystemName, SpriteComponent, SpriteProcessing)
     inputSystem.link(posSystem)
+    inputSystem.link(spriteSystem)
 
     posCompo0: PositionComponent = posSystem.create(entity0)
     posCompo0.x = 2

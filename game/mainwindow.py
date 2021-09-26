@@ -12,7 +12,7 @@ class MainWindow:
     ):
         """Create a new MainWindow instance."""
         pygame.init()
-        pygame.display.set_mode((width, height), pygame.RESIZABLE)
+        self.m_surface = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         pygame.display.set_caption(caption)
         self.m_framerate: int = 60
         self.m_clock: pygame.time = pygame.time.Clock()
@@ -36,6 +36,10 @@ class MainWindow:
     def framerate(self, framerate: int) -> None:
         """Set the framerate of the application. Default is 60 FPS."""
         self.m_framerate = min(max(0, framerate), 360)
+
+    @property
+    def surface(self) -> pygame.Surface:
+        return self.m_surface
 
     def resize(self, width: int, height: int) -> None:
         """Resize the MainWindow."""

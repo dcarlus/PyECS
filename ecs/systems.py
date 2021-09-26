@@ -9,8 +9,16 @@ class SystemProcessing:
         """Create a new SystemProcessing instance."""
         self.m_components = components
 
+    def pre(self, linkedSystems: []) -> None:
+        """Prepare work before run."""
+        return
+
     def run(self, linkedSystems: []) -> None:
         """Perform the Components processing."""
+        return
+
+    def post(self, linkedSystems: []) -> None:
+        """Do something after processing."""
         return
 
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)
@@ -64,9 +72,17 @@ class System(Generic[TConcreteComponent]):
         """Get all the components managed by the current System."""
         return self.m_components.allComponents()
 
+    def preprocess(self) -> None:
+        """Run the Components preprocessing."""
+        self.m_processing.pre(self.m_linkedSystems)
+
     def process(self) -> None:
         """Run the Components processing."""
         self.m_processing.run(self.m_linkedSystems)
+
+    def postprocess(self) -> None:
+        """Run the Components postprocessing."""
+        self.m_processing.post(self.m_linkedSystems)
 
     @property
     def name(self):

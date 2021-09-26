@@ -52,7 +52,13 @@ class World:
     def run(self):
         """Run all the registered Systems in the World."""
         for name in self.m_systems:
+            self.m_systems[name].preprocess()
+
+        for name in self.m_systems:
             self.m_systems[name].process()
+
+        for name in self.m_systems:
+            self.m_systems[name].postprocess()
 
     def debug(self) -> None:
         """Debug the World instance."""

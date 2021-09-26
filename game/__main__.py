@@ -6,7 +6,7 @@ from ecs.world import World
 
 window: MainWindow = MainWindow(320, 240, 'Crystal Shot', 'resources/ui/cshot_icon.png')
 window.framerate = 75
-world: World = cshot.get_world()
+world: World = cshot.getWorld()
 
 running: bool = True
 
