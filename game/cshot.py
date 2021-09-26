@@ -2,9 +2,12 @@ import pygame
 from ecs.entities import Entity
 from ecs.systems import System
 from ecs.world import World
-from gamecomponents.componentnaming import PositionSystemName, InputSystemName
+import gamecomponents.componentnaming as names
 from gamecomponents.positioncomponent import PositionComponent, PositionProcessing
 from gamecomponents.inputcomponent import InputComponent, InputProcessing
+from gamecomponents.spritecomponent import SpriteComponent, SpriteProcessing
+from game.graphics.sprite import Sprite
+from game.graphics import direction, geometry
 
 
 def get_world() -> World:
@@ -13,8 +16,9 @@ def get_world() -> World:
     entity0: Entity = world.createEntity()
     entity1: Entity = world.createEntity()
 
-    posSystem: System = world.system(PositionSystemName, PositionComponent, PositionProcessing)
-    inputSystem: System = world.system(InputSystemName, InputComponent, InputProcessing)
+    posSystem: System = world.system(names.PositionSystemName, PositionComponent, PositionProcessing)
+    inputSystem: System = world.system(names.InputSystemName, InputComponent, InputProcessing)
+    spriteSystem: System = world.system(names.SpriteSystemName, SpriteComponent, SpriteProcessing)
     inputSystem.link(posSystem)
 
     posCompo0: PositionComponent = posSystem.create(entity0)
@@ -32,5 +36,10 @@ def get_world() -> World:
     inputCompo1: InputComponent = inputSystem.create(entity1)
     inputCompo1.addKey(pygame.K_q)
     inputCompo1.addKey(pygame.K_d)
+
+    spriteCompo0: SpriteComponent = spriteSystem.create(entity0)
+    spriteCompo0.sprite = Sprite('resources/img/sprites/player.png', 64, 72)
+    spriteCompo1: SpriteComponent = spriteSystem.create(entity1)
+    spriteCompo1.sprite = Sprite('resources/img/sprites/skeleton.png', 64, 72)
 
     return world

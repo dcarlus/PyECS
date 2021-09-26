@@ -5,6 +5,7 @@ from ecs.entities import Entity
 
 
 class ComponentQuantity(Enum):
+    """Available quantity of a Component type on a single Entity."""
     ONE = 0
     MANY = 1
 

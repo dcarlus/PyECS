@@ -1,7 +1,7 @@
+import pygame
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
-import pygame
 from .componentnaming import PositionSystemName
 
 
@@ -57,27 +57,34 @@ class InputProcessing(SystemProcessing):
         for inputComponent in inputComponentsList:
             entity: Entity = inputComponent.entity
 
-            # Look for the position component attached to the same Entity.
+            # Look for the position component attached to the same Entity (only one is allowed per Entity).
             positionComponent: Component = next(c for c in positionComponentsList if c.entity == entity)
 
             if positionComponent is None:
                 continue
 
-            pressedKey: pygame.constants = pygame.key.get_pressed()
+            InputProcessing.processKeys(inputComponent, positionComponent)
 
-            # Logic with the keys.
-            if pressedKey[pygame.K_UP] and inputComponent.hasKey(pygame.K_UP):
-                positionComponent.x = positionComponent.x - 1
-                print("Up pressed: {}".format(positionComponent))
+    @staticmethod
+    def processKeys(
+        inputComponent: Component,
+        positionComponent: Component
+    ) -> None:
+        """Key processing itself with their own logic."""
+        pressedKey: pygame.constants = pygame.key.get_pressed()
 
-            if pressedKey[pygame.K_DOWN] and inputComponent.hasKey(pygame.K_DOWN):
-                positionComponent.x = positionComponent.x + 1
-                print("Down pressed: {}".format(positionComponent))
+        if pressedKey[pygame.K_UP] and inputComponent.hasKey(pygame.K_UP):
+            positionComponent.x = positionComponent.x - 1
+            print("Up pressed: {}".format(positionComponent))
 
-            if pressedKey[pygame.K_LEFT] and inputComponent.hasKey(pygame.K_LEFT):
-                positionComponent.y = positionComponent.y - 1
-                print("Left pressed: {}".format(positionComponent))
+        if pressedKey[pygame.K_DOWN] and inputComponent.hasKey(pygame.K_DOWN):
+            positionComponent.x = positionComponent.x + 1
+            print("Down pressed: {}".format(positionComponent))
 
-            if pressedKey[pygame.K_RIGHT] and inputComponent.hasKey(pygame.K_RIGHT):
-                positionComponent.y = positionComponent.y + 1
-                print("Right pressed: {}".format(positionComponent))
+        if pressedKey[pygame.K_LEFT] and inputComponent.hasKey(pygame.K_LEFT):
+            positionComponent.y = positionComponent.y - 1
+            print("Left pressed: {}".format(positionComponent))
+
+        if pressedKey[pygame.K_RIGHT] and inputComponent.hasKey(pygame.K_RIGHT):
+            positionComponent.y = positionComponent.y + 1
+            print("Right pressed: {}".format(positionComponent))
