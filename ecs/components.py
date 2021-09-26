@@ -1,6 +1,12 @@
+from enum import Enum
 from termcolor import colored
 from typing import TypeVar, Generic, List, Type
 from ecs.entities import Entity
+
+
+class ComponentQuantity(Enum):
+    ONE = 0
+    MANY = 1
 
 
 class Component:
@@ -9,6 +15,11 @@ class Component:
     def __init__(self, entity: Entity) -> None:
         """Create a new Component instance."""
         self.m_entity: Entity = entity
+
+    @classmethod
+    def quantity(cls) -> ComponentQuantity:
+        """Get the quantity of the Component type a single Entity can bear."""
+        return ComponentQuantity.ONE
 
     @property
     def entity(self) -> int:

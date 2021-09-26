@@ -1,6 +1,6 @@
 # Module containing user defined components and system processing.
 # Here some demonstration components and system processing for a 2D video game using pygame.
-from ecs.components import Component, ComponentFactory
+from ecs.components import Component, ComponentQuantity, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 import pygame

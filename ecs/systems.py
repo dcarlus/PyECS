@@ -1,5 +1,5 @@
 from termcolor import colored
-from ecs.components import Component, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
+from ecs.components import Component, ComponentQuantity, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
 
 
 class SystemProcessing:
@@ -32,7 +32,18 @@ class System(Generic[TConcreteComponent]):
         self.m_processing = processingClass(self.m_components)
 
     def create(self, entity: Entity) -> TConcreteComponent:
-        """Create a Component and attach it to the provided Entity."""
+        """If the Entity has no Component of the wanted type, it creates a new Component and attach it to the provided
+        Entity.
+        In the case where the Entity already has a Component of the wanted type and cannot have more than one Component
+        of this type, it returns the previously created Component attached to that Entity."""
+        quantity: ComponentQuantity = self.m_memberClass.quantity()
+
+        if quantity is ComponentQuantity.ONE:
+            listComponents: [Component] = self.m_components.components(entity)
+
+            if len(listComponents) > 0:
+                return listComponents[0]
+
         return self.m_components.create(entity)
 
     def delete(self, entity: Entity) -> None:
