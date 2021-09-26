@@ -1,6 +1,6 @@
 from ecs.components import Component
 from ecs.entities import Entity
-from game.graphics.direction import Direction
+from engine.graphics.direction import Direction
 
 
 class DirectionComponent(Component):

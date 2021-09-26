@@ -2,7 +2,7 @@ import pygame
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
-from game.graphics.sprite import Sprite
+from engine.graphics.sprite import Sprite
 
 
 class SpriteComponent(Component):

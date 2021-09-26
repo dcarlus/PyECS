@@ -1,7 +1,7 @@
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing
-from game.graphics.geometry import Point
+from engine.graphics.geometry import Point
 
 
 class PositionComponent(Component):

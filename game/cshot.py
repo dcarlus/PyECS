@@ -6,8 +6,7 @@ import gamecomponents.componentnaming as names
 from gamecomponents.positioncomponent import PositionComponent, PositionProcessing
 from gamecomponents.inputcomponent import InputComponent, InputProcessing
 from gamecomponents.spritecomponent import SpriteComponent, SpriteProcessing
-from game.graphics.sprite import Sprite
-from game.graphics import direction, geometry
+from engine.graphics.sprite import Sprite
 
 
 def getWorld() -> World:
