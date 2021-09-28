@@ -9,17 +9,70 @@ from .positioncomponent import PositionComponent
 from .spritecomponent import SpriteComponent
 
 
+class Action:
+    """Base class for defining an Action to be performed when an input is activated."""
+
+    def triggered(self) -> None:
+        """What is done by the Action."""
+        pass
+
+
+class MoveCharacterAction(Action):
+    """Class for moving a Character."""
+
+    def __init__(
+        self,
+        positionComponent: PositionComponent,
+        spriteComponent: SpriteComponent
+    ):
+        """Create a new MoveCharacterAction instance."""
+        super().__init__()
+        self.m_positionComponent: PositionComponent = positionComponent
+        self.m_spriteComponent: SpriteComponent = spriteComponent
+        self.m_direction: Direction = Direction.UP
+        self.m_moveShift: Point = Point()
+
+    @property
+    def direction(self) -> Direction:
+        """Get the direction of the move."""
+        return self.m_direction
+
+    def setDirection(self, direction: Direction) -> 'MoveCharacterAction':
+        """Set the direction of the move."""
+        self.m_direction = direction
+        return self
+
+    @property
+    def shift(self) -> Point:
+        """Get the shift of the move."""
+        return self.m_moveShift
+
+    def setShift(self, shift: Point) -> 'MoveCharacterAction':
+        self.m_moveShift = shift
+        return self
+
+    def triggered(self) -> None:
+        """What is done by the Action."""
+        currentPosition: Point = Point(self.m_positionComponent.position.x, self.m_positionComponent.position.y)
+        currentPosition = currentPosition + self.m_moveShift
+        self.m_positionComponent.position.x = currentPosition.x
+        self.m_positionComponent.position.y = currentPosition.y
+        self.m_spriteComponent.sprite.position = self.m_positionComponent.position
+        self.m_spriteComponent.sprite.changeDirection(self.m_direction)
+        self.m_spriteComponent.sprite.update()
+
+
 class InputComponent(Component):
     """Component for setting the inputs (keyboard, mouse, controller, ...) applied on an Entity."""
 
     def __init__(self, entity: Entity) -> None:
         """Create a new PositionComponent instance."""
         super().__init__(entity)
-        self.m_keys: {pygame.constants} = set()
+        self.m_keys: {pygame.constants, Action} = {}
 
-    def addKey(self, key: pygame.constants) -> None:
+    def addKey(self, action: [pygame.constants, Action]) -> None:
         """Add a new input key supported by the current Component."""
-        self.m_keys.add(key)
+        self.m_keys[action[0]] = action[1]
 
     def removeKey(self, key: pygame.constants) -> None:
         """Remove an input key from the current Component."""
@@ -33,15 +86,14 @@ class InputComponent(Component):
         """Check if the Component supports an input key."""
         return self.m_keys.__contains__(key)
 
-    def __str__(self):
-        """Return a string for representing the InputComponent."""
-        output: str = "{ "
+    def keys(self) -> [pygame.constants]:
+        """Get all the available keys."""
+        return self.m_keys.keys()
 
-        for key in self.m_keys:
-            output += pygame.key.name(key) + " "
-
-        output += "}"
-        return output
+    def trigger(self, key: pygame.constants) -> None:
+        """Trigger the Action associated to the key, if found."""
+        if self.hasKey(key):
+            self.m_keys[key].triggered()
 
 
 class InputProcessing(SystemProcessing):
@@ -56,58 +108,19 @@ class InputProcessing(SystemProcessing):
         """Perform the Components processing."""
         self.m_frameCounter = self.m_frameCounter + 1
         inputComponentsList: [Component] = self.m_components.allComponents()
-        positionSystem: System = linkedSystems[SystemName.position()]
-        spriteSystem: System = linkedSystems[SystemName.sprite()]
 
         for inputComponent in inputComponentsList:
             entity: Entity = inputComponent.entity
-
-            # Look for the position and sprite components attached to the same Entity (only one is allowed per Entity).
-            positionComponent: PositionComponent = positionSystem.componentFor(entity)
-            spriteComponent: SpriteComponent = spriteSystem.componentFor(entity)
-
-            if positionComponent is None or spriteComponent is None:
-                continue
-
-            needAnimation: bool = InputProcessing.processKeys(inputComponent, positionComponent, spriteComponent)
-
-            if needAnimation and (self.m_frameCounter % 10) == 0:
-                spriteComponent.sprite.nextSprite()
+            InputProcessing.processKeys(inputComponent)
 
     @staticmethod
     def processKeys(
-        inputComponent: InputComponent,
-        positionComponent: PositionComponent,
-        spriteComponent: SpriteComponent
+        inputComponent: InputComponent
     ) -> bool:
         """Key processing itself with their own logic."""
-        # Todo: create a CharacterProperties component?
-        characterSpeed: int = 2
+        pressedKey: [pygame.constants] = pygame.key.get_pressed()
+        availableKeys: [pygame.constants] = inputComponent.keys()
 
-        needAnimation: bool = False
-        pressedKey: pygame.constants = pygame.key.get_pressed()
-        spriteDirection: Direction = None
-
-        if pressedKey[pygame.K_UP] and inputComponent.hasKey(pygame.K_UP):
-            positionComponent.y = positionComponent.y - characterSpeed
-            spriteDirection = Direction.UP
-
-        if pressedKey[pygame.K_DOWN] and inputComponent.hasKey(pygame.K_DOWN):
-            positionComponent.y = positionComponent.y + characterSpeed
-            spriteDirection = Direction.DOWN
-
-        if pressedKey[pygame.K_LEFT] and inputComponent.hasKey(pygame.K_LEFT):
-            positionComponent.x = positionComponent.x - characterSpeed
-            spriteDirection = Direction.LEFT
-
-        if pressedKey[pygame.K_RIGHT] and inputComponent.hasKey(pygame.K_RIGHT):
-            positionComponent.x = positionComponent.x + characterSpeed
-            spriteDirection = Direction.RIGHT
-
-        if spriteDirection is not None:
-            needAnimation = True
-            spriteComponent.sprite.changeDirection(spriteDirection)
-            spriteComponent.sprite.position = Point(positionComponent.x, positionComponent.y)
-            spriteComponent.sprite.update()
-
-        return needAnimation
+        for key in availableKeys:
+            if pressedKey[key]:
+                inputComponent.trigger(key)

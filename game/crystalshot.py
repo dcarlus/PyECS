@@ -1,10 +1,11 @@
 import pygame
 from ecs.systems import System
 from game.components.engine.positioncomponent import PositionComponent, PositionProcessing
-from game.components.engine.inputcomponent import InputComponent, InputProcessing
+from game.components.engine.inputcomponent import InputComponent, InputProcessing, MoveCharacterAction
 from game.components.engine.spritecomponent import SpriteComponent, SpriteProcessing
 from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent, CharacterPropertiesProcessing
 from engine.graphics.sprite import Sprite, Direction
+from engine.graphics.geometry import Point
 from engine.game import Game
 from game.appdata import SystemName, AnimationName
 from characters import Player
@@ -29,8 +30,8 @@ class CrystalShot(Game):
         player: Player = Player(self.m_world, "Anna")
         self.m_entities.append(player.entity)
 
-        player.positionSystem.x = 2
-        player.positionSystem.y = 9
+        player.positionComponent.x = 2
+        player.positionComponent.y = 9
 
         SpriteWidth: int = 64
         SpriteHeight: int = 64
@@ -45,10 +46,26 @@ class CrystalShot(Game):
         player.spriteComponent.sprite.addAnimation(AnimationName.walk(), WalkAnimationDirections, AmountSprites)
         player.spriteComponent.sprite.changeAnimation(AnimationName.walk())
 
-        player.inputComponent.addKey(pygame.K_UP)
-        player.inputComponent.addKey(pygame.K_DOWN)
-        player.inputComponent.addKey(pygame.K_LEFT)
-        player.inputComponent.addKey(pygame.K_RIGHT)
+
+
+        PlayerMoveSpeed: int = 2
+        moveUpAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setDirection(Direction.UP) \
+            .setShift(Point(0, -PlayerMoveSpeed))
+        moveDownAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setDirection(Direction.DOWN) \
+            .setShift(Point(0, PlayerMoveSpeed))
+        moveLeftAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setDirection(Direction.LEFT) \
+            .setShift(Point(-PlayerMoveSpeed, 0))
+        moveRightAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setDirection(Direction.RIGHT) \
+            .setShift(Point(PlayerMoveSpeed, 0))
+
+        player.inputComponent.addKey([pygame.K_UP, moveUpAction])
+        player.inputComponent.addKey([pygame.K_DOWN, moveDownAction])
+        player.inputComponent.addKey([pygame.K_LEFT, moveLeftAction])
+        player.inputComponent.addKey([pygame.K_RIGHT, moveRightAction])
 
     # Todo: this is a temporary code of course!
     def __createSystems(self):

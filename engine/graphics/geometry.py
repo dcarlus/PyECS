@@ -36,3 +36,11 @@ class Point():
     def asTuple(self) -> [int, int]:
         """Return the Point as a tuple of numbers [x, y]."""
         return [self.m_x, self.m_y]
+
+    def __add__(self, other) -> 'Point':
+        """Define the operator + on Point."""
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        """Define the operator - on Point."""
+        return Point(self.x - other.x, self.y - other.y)

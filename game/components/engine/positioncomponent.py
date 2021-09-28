@@ -36,8 +36,8 @@ class PositionComponent(Component):
 
     @property
     def position(self) -> Point:
-        copied: Point = copy.deepcopy(self.m_position)
-        return copied
+        """Get the position of PositionComponent."""
+        return self.m_position
 
     def __str__(self):
         """Return a string for representing the PositionComponent."""

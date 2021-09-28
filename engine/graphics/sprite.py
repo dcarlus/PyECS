@@ -63,7 +63,8 @@ class Sprite(pygame.sprite.Sprite):
             spriteSheet: str = '',
             width: int = 0,
             height: int = 0,
-            colorKey: [] = [0, 0, 0]
+            colorKey: [] = [0, 0, 0],
+            framerate: int = 20
     ) -> None:
         """Create a new Sprite instance."""
         super().__init__()
@@ -73,9 +74,12 @@ class Sprite(pygame.sprite.Sprite):
             self.m_spriteWidth: int = max(0, width)
             self.m_spriteHeight: int = max(0, height)
             self.m_colorKey: [] = colorKey
+            self.m_framerate: int = max(0, framerate) + 1
+            self.m_frameCounter: int = 0
 
             self.m_animations: {str, Animation} = {}
             self.m_currentAnimation: Animation = None
+            self.m_needUpdate: bool = False
 
             self.image: pygame.Surface = pygame.Surface([self.m_spriteWidth, self.m_spriteHeight])
             self.rect: pygame.Rect = self.image.get_rect()
@@ -95,27 +99,38 @@ class Sprite(pygame.sprite.Sprite):
     def changeAnimation(self, animName: str) -> None:
         """Change the current Animation."""
         if self.m_animations.__contains__(animName):
+            if self.m_currentAnimation is self.m_animations[animName]:
+                return
+
             if self.m_currentAnimation is not None:
                 previousDirection: Direction = self.m_currentAnimation.direction
                 self.m_animations[animName].direction = previousDirection
             self.m_currentAnimation = self.m_animations[animName]
             self.m_currentAnimation.activate()
+            self.m_needUpdate = True
         else:
             self.m_currentAnimation = None
 
     def changeDirection(self, direction: Direction) -> None:
         """Change the direction of the current Animation."""
-        self.m_currentAnimation.direction = direction
+        if self.m_currentAnimation.direction == direction:
+            return
 
-    def nextSprite(self) -> None:
-        """Make the current Animation go to the next sprite."""
-        if self.m_currentAnimation is not None:
-            self.m_currentAnimation.nextSprite()
+        self.m_currentAnimation.direction = direction
+        self.m_needUpdate = True
 
     def update(self) -> None:
         """Get the sprite to be rendered in the current Animation."""
         if self.m_currentAnimation is None:
-            return None
+            return
+
+        self.m_frameCounter = (self.m_frameCounter + 1) % self.m_framerate
+
+        if not self.m_needUpdate and self.m_frameCounter != 0:
+            return
+
+        if self.m_frameCounter == 0:
+            self.m_currentAnimation.nextSprite()
 
         xSheet = self.m_currentAnimation.xPosition
         ySheet = self.m_currentAnimation.yPosition(self.m_spriteHeight)
@@ -129,6 +144,11 @@ class Sprite(pygame.sprite.Sprite):
         )
 
         self.image.set_colorkey(self.m_colorKey)
+        self.m_needUpdate = False
+
+    def isAlreadyInDirection(self, direction: Direction) -> bool:
+        """Check if the Sprite is already set on the animation for the given Direction."""
+        return self.m_currentAnimation.direction == direction
 
     @property
     def position(self) -> Point:

@@ -39,7 +39,7 @@ class Character:
         return self.m_entity
 
     @property
-    def positionSystem(self) -> PositionComponent:
+    def positionComponent(self) -> PositionComponent:
         """Get the PositionComponent of the Character."""
         return self.m_positionComponent
 
