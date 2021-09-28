@@ -1,11 +1,13 @@
 import pygame
 from ecs.systems import System
-from gamecomponents.positioncomponent import PositionComponent, PositionProcessing
-from gamecomponents.inputcomponent import InputComponent, InputProcessing
-from gamecomponents.spritecomponent import SpriteComponent, SpriteProcessing
+from game.components.engine.positioncomponent import PositionComponent, PositionProcessing
+from game.components.engine.inputcomponent import InputComponent, InputProcessing
+from game.components.engine.spritecomponent import SpriteComponent, SpriteProcessing
+from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent, CharacterPropertiesProcessing
 from engine.graphics.sprite import Sprite, Direction
 from engine.game import Game
 from game.appdata import SystemName, AnimationName
+from characters import Player
 
 
 class CrystalShot(Game):
@@ -19,49 +21,17 @@ class CrystalShot(Game):
 
     def __setupWorld(self):
         """Setup the game ECS World."""
-        self.m_entities.append(self.m_world.createEntity())
-        self.m_entities.append(self.m_world.createEntity())
-
-        # Todo: create classes for characters of the game that are an Entity with its Components, registered in the
-        #  ECS World.
         self.__createSystems()
-        self.__createPositionComponents()
-        self.__createInputComponents()
-        self.__createSpriteComponents()
+        self.__generateCharacters()
 
-    # Todo: this is a temporary code of course!
-    def __createSystems(self):
-        """Create the different Systems of the Game."""
-        posSystem: System = self.m_world.system(SystemName.position(), PositionComponent, PositionProcessing)
-        inputSystem: System = self.m_world.system(SystemName.input(), InputComponent, InputProcessing)
-        spriteSystem: System = self.m_world.system(SystemName.sprite(), SpriteComponent, SpriteProcessing)
-        inputSystem.link(posSystem)
-        inputSystem.link(spriteSystem)
+    def __generateCharacters(self):
+        """Generate the Characters of the Game."""
+        player: Player = Player(self.m_world, "Anna")
+        self.m_entities.append(player.entity)
 
-    def __createPositionComponents(self):
-        """Create the PositionComponents."""
-        posSystem: System = self.m_world.system(SystemName.position())
-        posCompo0: PositionComponent = posSystem.create(self.m_entities[0])
-        posCompo0.x = 2
-        posCompo0.y = 9
-        posCompo1: PositionComponent = posSystem.create(self.m_entities[1])
-        posCompo1.x = 3
-        posCompo1.y = 5
+        player.positionSystem.x = 2
+        player.positionSystem.y = 9
 
-    def __createInputComponents(self):
-        """Create the InputComponents."""
-        inputSystem: System = self.m_world.system(SystemName.input())
-        inputCompo0: InputComponent = inputSystem.create(self.m_entities[0])
-        inputCompo0.addKey(pygame.K_UP)
-        inputCompo0.addKey(pygame.K_DOWN)
-        inputCompo0.addKey(pygame.K_LEFT)
-        inputCompo0.addKey(pygame.K_RIGHT)
-        inputCompo1: InputComponent = inputSystem.create(self.m_entities[1])
-        inputCompo1.addKey(pygame.K_q)
-        inputCompo1.addKey(pygame.K_d)
-
-    def __createSpriteComponents(self):
-        """Create the SpriteComponents."""
         SpriteWidth: int = 64
         SpriteHeight: int = 64
         AmountSprites: int = 9
@@ -71,13 +41,25 @@ class CrystalShot(Game):
             Direction.DOWN: 10,
             Direction.RIGHT: 11
         }
+        player.spriteComponent.sprite = Sprite('resources/img/sprites/player.png', SpriteWidth, SpriteHeight)
+        player.spriteComponent.sprite.addAnimation(AnimationName.walk(), WalkAnimationDirections, AmountSprites)
+        player.spriteComponent.sprite.changeAnimation(AnimationName.walk())
 
-        spriteSystem: System = self.m_world.system(SystemName.sprite())
-        spriteCompo0: SpriteComponent = spriteSystem.create(self.m_entities[0])
-        spriteCompo0.sprite = Sprite('resources/img/sprites/player.png', SpriteWidth, SpriteHeight)
-        spriteCompo0.sprite.addAnimation(AnimationName.walk(), WalkAnimationDirections, AmountSprites)
-        spriteCompo0.sprite.changeAnimation(AnimationName.walk())
-        # spriteCompo1: SpriteComponent = spriteSystem.create(self.m_entities[1])
-        # spriteCompo1.sprite = Sprite('resources/img/sprites/skeleton.png', SpriteWidth, SpriteHeight)
-        # spriteCompo1.sprite.addAnimation(AnimationName.walk(), WalkAnimationDirections, AmountSprites)
-        # spriteCompo1.sprite.changeAnimation(AnimationName.walk())
+        player.inputComponent.addKey(pygame.K_UP)
+        player.inputComponent.addKey(pygame.K_DOWN)
+        player.inputComponent.addKey(pygame.K_LEFT)
+        player.inputComponent.addKey(pygame.K_RIGHT)
+
+    # Todo: this is a temporary code of course!
+    def __createSystems(self):
+        """Create the different Systems of the Game."""
+        posSystem: System = self.m_world.system(SystemName.position(), PositionComponent, PositionProcessing)
+        inputSystem: System = self.m_world.system(SystemName.input(), InputComponent, InputProcessing)
+        spriteSystem: System = self.m_world.system(SystemName.sprite(), SpriteComponent, SpriteProcessing)
+        inputSystem.link(posSystem)
+        inputSystem.link(spriteSystem)
+        charPropSystem: System = self.m_world.system(
+            SystemName.characterProperties(),
+            CharacterPropertiesComponent,
+            CharacterPropertiesProcessing
+        )

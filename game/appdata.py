@@ -42,6 +42,10 @@ class SystemName:
     def direction() -> str:
         return 'Direction'
 
+    @staticmethod
+    def characterProperties() -> str:
+        return 'CharacterProperties'
+
 
 class AnimationName:
     """For naming Animations of Sprites."""

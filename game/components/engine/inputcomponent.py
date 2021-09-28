@@ -56,7 +56,6 @@ class InputProcessing(SystemProcessing):
         """Perform the Components processing."""
         self.m_frameCounter = self.m_frameCounter + 1
         inputComponentsList: [Component] = self.m_components.allComponents()
-
         positionSystem: System = linkedSystems[SystemName.position()]
         spriteSystem: System = linkedSystems[SystemName.sprite()]
 

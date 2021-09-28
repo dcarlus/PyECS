@@ -1,3 +1,5 @@
+import copy
+
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing
@@ -31,6 +33,11 @@ class PositionComponent(Component):
     def y(self, y: int) -> None:
         """Get the Y coordinate of the PositionComponent."""
         self.m_position.y = y
+
+    @property
+    def position(self) -> Point:
+        copied: Point = copy.deepcopy(self.m_position)
+        return copied
 
     def __str__(self):
         """Return a string for representing the PositionComponent."""
