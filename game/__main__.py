@@ -7,6 +7,7 @@ if __name__ == '__main__':
     framerate: int = 60
     csGame: CrystalShot = CrystalShot(framerate)
     AppData.window().framerate = framerate
+    AppData.window().showFPS = True
     AppData.window().clearColor = (0, 0, 0)
 
     running: bool = True
