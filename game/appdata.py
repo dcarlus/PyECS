@@ -4,7 +4,7 @@ from engine.mainwindow import MainWindow
 class AppData:
     """Aggregation of application data."""
     __Mutex: threading.Lock = threading.Lock()
-    __Window: MainWindow = MainWindow(320, 240, 'Crystal Shot', 'resources/ui/cshot_icon.png')
+    __Window: MainWindow = MainWindow(800, 600, 'Crystal Shot', 'resources/ui/cshot_icon.png')
 
     @staticmethod
     def window() -> MainWindow:
