@@ -38,7 +38,6 @@ class SpriteProcessing(SystemProcessing):
 
         for spriteComponent in spriteComponentsList:
             sprite: Sprite = spriteComponent.sprite
-            sprite.update()
 
             if sprite.ready and not self.m_spriteGroup.has(sprite):
                 self.m_spriteGroup.add(sprite)

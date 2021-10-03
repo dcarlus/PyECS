@@ -20,7 +20,7 @@ class Animation:
                 realYPositions[dir] = y
 
         self.m_yPositions: {Direction, int} = realYPositions
-        self.m_amountSprites: int = max(0, amountSprites)
+        self.m_amountSprites: int = max(1, amountSprites)
         self.m_width = max(0, width)
         self.m_currentDirection: Direction = Direction.UP
         self.m_currentIndex: int = 0
@@ -126,7 +126,7 @@ class Sprite(pygame.sprite.Sprite):
 
         self.m_frameCounter = (self.m_frameCounter + 1) % self.m_framerate
 
-        if not self.m_needUpdate and self.m_frameCounter != 0:
+        if not self.m_needUpdate or self.m_frameCounter != 0:
             return
 
         if self.m_frameCounter == 0:
@@ -159,6 +159,7 @@ class Sprite(pygame.sprite.Sprite):
     def position(self, position: Point) -> None:
         """Set the position of the Sprite (in the 2D game world)."""
         self.rect.topleft = position.asTuple()
+        self.m_needUpdate = True
 
     @property
     def ready(self) -> bool:

@@ -2,7 +2,6 @@ import pygame
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
-from game.appdata import SystemName
 from engine.graphics.direction import Direction
 from engine.graphics.geometry import Point
 from .positioncomponent import PositionComponent

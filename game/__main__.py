@@ -18,8 +18,8 @@ if __name__ == '__main__':
             elif event.type == pygame.VIDEORESIZE:
                 AppData.window().resize(event.size[0], event.size[1])
 
-            AppData.window().clear()
-            csGame.world.run()
-            AppData.window().update()
+        AppData.window().clear()
+        csGame.world.run()
+        AppData.window().update()
 
     MainWindow.end()
