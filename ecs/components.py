@@ -23,7 +23,13 @@ class Component:
         return ComponentQuantity.ONE
 
     @property
-    def entity(self) -> int:
+    def entity(self) -> Entity:
+        """Get the Entity to which the current Component is attached to."""
+        return self.m_entity
+
+    @property
+    def entityValue(self) -> int:
+        """Get the value of the Entity to which the current Component is attached to."""
         return self.m_entity.value
 
     def hasValidEntity(self) -> bool:
@@ -57,11 +63,11 @@ class ComponentFactory(Generic[TConcreteComponent]):
 
     def components(self, entity: Entity) -> [TConcreteComponent]:
         """Get all the Components attached to an Entity."""
-        return [component for component in self.m_components if component.entity == entity.value]
+        return [component for component in self.m_components if component.entity == entity]
 
     def delete(self, entity: Entity) -> None:
         """Delete the Component instances bearing the entity and remove them from the ComponentFactory."""
-        self.m_components = [component for component in self.m_components if component.entity != entity.value]
+        self.m_components = [component for component in self.m_components if component.entity != entity]
 
     def debug(self) -> None:
         """Show the content of the ComponentFactory in a terminal."""
@@ -75,6 +81,6 @@ class ComponentFactory(Generic[TConcreteComponent]):
             print(colored('{} = {} attached to {}'.format(
                     self.m_memberClass.__name__,
                     component,
-                    component.entity
+                    component.entityValue
                 ), 'cyan')
             )

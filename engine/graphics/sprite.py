@@ -150,6 +150,10 @@ class Sprite(pygame.sprite.Sprite):
         """Check if the Sprite is already set on the animation for the given Direction."""
         return self.m_currentAnimation.direction == direction
 
+    def collides(self, other: 'Sprite') -> bool:
+        """Test if the current Sprite collides another one."""
+        return self.rect.colliderect(other.rect)
+
     @property
     def position(self) -> Point:
         """Get the current position of the Sprite (in the 2D game world)."""

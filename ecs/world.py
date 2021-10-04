@@ -9,8 +9,8 @@ class World:
     def __init__(self):
         """Create a new World instance."""
         self.m_entities: EntityFactory = EntityFactory()
-        self.m_entityList = []
-        self.m_systems = {}
+        self.m_entityList: [Entity] = []
+        self.m_systems: {str, System} = {}
 
     def __del__(self):
         """Clear data on World destruction."""
@@ -52,14 +52,19 @@ class World:
 
     def run(self):
         """Run all the registered Systems in the World."""
-        for name in self.m_systems:
-            self.m_systems[name].preprocess()
+        clearEntitiesList: [Entity] = []
 
         for name in self.m_systems:
-            self.m_systems[name].process()
+            clearEntitiesList.extend(self.m_systems[name].preprocess())
 
         for name in self.m_systems:
-            self.m_systems[name].postprocess()
+            clearEntitiesList.extend(self.m_systems[name].process())
+
+        for name in self.m_systems:
+            clearEntitiesList.extend(self.m_systems[name].postprocess())
+
+        for entity in clearEntitiesList:
+            self.delete(entity)
 
     def debug(self) -> None:
         """Debug the World instance."""

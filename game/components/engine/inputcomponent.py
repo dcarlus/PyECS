@@ -6,6 +6,7 @@ from engine.graphics.direction import Direction
 from engine.graphics.geometry import Point
 from .positioncomponent import PositionComponent
 from .spritecomponent import SpriteComponent
+from ..gameplay.charastatscomponent import CharacterPropertiesComponent
 
 
 class Action:
@@ -22,12 +23,14 @@ class MoveCharacterAction(Action):
     def __init__(
         self,
         positionComponent: PositionComponent,
-        spriteComponent: SpriteComponent
+        spriteComponent: SpriteComponent,
+        statsComponent: CharacterPropertiesComponent
     ):
         """Create a new MoveCharacterAction instance."""
         super().__init__()
         self.m_positionComponent: PositionComponent = positionComponent
         self.m_spriteComponent: SpriteComponent = spriteComponent
+        self.m_statsComponent: statsComponent = statsComponent
         self.m_direction: Direction = Direction.UP
         self.m_moveShift: Point = Point()
 
@@ -53,7 +56,8 @@ class MoveCharacterAction(Action):
     def triggered(self) -> None:
         """What is done by the Action."""
         currentPosition: Point = Point(self.m_positionComponent.position.x, self.m_positionComponent.position.y)
-        currentPosition = currentPosition + self.m_moveShift
+        shiftCoords: Point = self.m_moveShift.multiplied(self.m_statsComponent.speed)
+        currentPosition = currentPosition + shiftCoords
         self.m_positionComponent.position.x = currentPosition.x
         self.m_positionComponent.position.y = currentPosition.y
         self.m_spriteComponent.sprite.position = self.m_positionComponent.position
@@ -101,16 +105,16 @@ class InputProcessing(SystemProcessing):
     def __init__(self, components: ComponentFactory):
         """Create a new InputProcessing instance."""
         super().__init__(components)
-        self.m_frameCounter: int = 0
 
-    def run(self, linkedSystems: [System]) -> None:
+    def run(self, linkedSystems: {str, System}) -> [Entity]:
         """Perform the Components processing."""
-        self.m_frameCounter = self.m_frameCounter + 1
         inputComponentsList: [Component] = self.m_components.allComponents()
 
         for inputComponent in inputComponentsList:
-            entity: Entity = inputComponent.entity
+            entity: Entity = inputComponent.entityValue
             InputProcessing.processKeys(inputComponent)
+
+        return []
 
     @staticmethod
     def processKeys(

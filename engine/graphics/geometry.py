@@ -37,10 +37,14 @@ class Point():
         """Return the Point as a tuple of numbers [x, y]."""
         return [self.m_x, self.m_y]
 
-    def __add__(self, other) -> 'Point':
+    def multiplied(self, factor: int) -> 'Point':
+        """Create a new Point in which the coordinates of the current Point are mutiplied by a given factor."""
+        return Point(self.x * factor, self.y * factor)
+
+    def __add__(self, other: 'Point') -> 'Point':
         """Define the operator + on Point."""
         return Point(self.x + other.x, self.y + other.y)
 
-    def __sub__(self, other):
+    def __sub__(self, other: 'Point') -> 'Point':
         """Define the operator - on Point."""
         return Point(self.x - other.x, self.y - other.y)

@@ -1,14 +1,17 @@
+import random
+
 import pygame
 from ecs.systems import System
 from game.components.engine.positioncomponent import PositionComponent, PositionProcessing
 from game.components.engine.inputcomponent import InputComponent, InputProcessing, MoveCharacterAction
 from game.components.engine.spritecomponent import SpriteComponent, SpriteProcessing
 from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent, CharacterPropertiesProcessing
+from game.components.gameplay.aicomponent import AIComponent, AIProcessing
 from engine.graphics.sprite import Sprite, Direction
 from engine.graphics.geometry import Point
 from engine.game import Game
 from game.appdata import SystemName, AnimationName
-from characters import Player
+from characters import Player, Bot
 
 
 class CrystalShot(Game):
@@ -20,16 +23,41 @@ class CrystalShot(Game):
         pygame.key.set_repeat(int((1./framerate) * 1000))
         self.__setupWorld()
 
-    def __setupWorld(self):
+    def __setupWorld(self) -> None:
         """Setup the game ECS World."""
         self.__createSystems()
-        self.__generateCharacters()
+        self.__generateBots(128)
+        #self.__generatePlayer()
 
-    def __generateCharacters(self):
-        """Generate the Characters of the Game."""
+    def __generateBots(self, count: int) -> None:
+        """Generate the Bots of the Game."""
+        for index in range(count):
+            newBot: Bot = Bot(self.m_world)
+            self.m_entities.append(newBot.entity)
+
+            SpriteWidth: int = 64
+            SpriteHeight: int = 64
+            AmountSprites: int = 9
+            WalkAnimationDirections: {Direction, int} = {
+                Direction.UP: 8,
+                Direction.LEFT: 9,
+                Direction.DOWN: 10,
+                Direction.RIGHT: 11
+            }
+            newBot.spriteComponent.sprite = Sprite('resources/img/sprites/skeleton.png', SpriteWidth, SpriteHeight)
+            newBot.spriteComponent.sprite.addAnimation(AnimationName.walk(), WalkAnimationDirections, AmountSprites)
+            newBot.spriteComponent.sprite.changeAnimation(AnimationName.walk())
+
+            newBot.propertiesComponent.speed = random.randint(1, 3)
+            newBot.positionComponent.x = random.randint(0, 800)
+            newBot.positionComponent.y = random.randint(0, 600)
+
+    def __generatePlayer(self) -> None:
+        """Generate the Player of the Game."""
         player: Player = Player(self.m_world, "Anna")
         self.m_entities.append(player.entity)
 
+        player.propertiesComponent.speed = 2
         player.positionComponent.x = 2
         player.positionComponent.y = 9
 
@@ -47,20 +75,34 @@ class CrystalShot(Game):
         player.spriteComponent.sprite.changeAnimation(AnimationName.walk())
 
 
-
-        PlayerMoveSpeed: int = 2
-        moveUpAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+        moveUpAction = MoveCharacterAction(
+            player.positionComponent,
+            player.spriteComponent,
+            player.propertiesComponent
+        ) \
             .setDirection(Direction.UP) \
-            .setShift(Point(0, -PlayerMoveSpeed))
-        moveDownAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setShift(Point(0, -1))
+        moveDownAction = MoveCharacterAction(
+            player.positionComponent,
+            player.spriteComponent,
+            player.propertiesComponent
+        ) \
             .setDirection(Direction.DOWN) \
-            .setShift(Point(0, PlayerMoveSpeed))
-        moveLeftAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setShift(Point(0, 1))
+        moveLeftAction = MoveCharacterAction(
+            player.positionComponent,
+            player.spriteComponent,
+            player.propertiesComponent
+        ) \
             .setDirection(Direction.LEFT) \
-            .setShift(Point(-PlayerMoveSpeed, 0))
-        moveRightAction = MoveCharacterAction(player.positionComponent, player.spriteComponent) \
+            .setShift(Point(-1, 0))
+        moveRightAction = MoveCharacterAction(
+            player.positionComponent,
+            player.spriteComponent,
+            player.propertiesComponent
+        ) \
             .setDirection(Direction.RIGHT) \
-            .setShift(Point(PlayerMoveSpeed, 0))
+            .setShift(Point(1, 0))
 
         player.inputComponent.addKey([pygame.K_UP, moveUpAction])
         player.inputComponent.addKey([pygame.K_DOWN, moveDownAction])
@@ -68,15 +110,20 @@ class CrystalShot(Game):
         player.inputComponent.addKey([pygame.K_RIGHT, moveRightAction])
 
     # Todo: this is a temporary code of course!
-    def __createSystems(self):
+    def __createSystems(self) -> None:
         """Create the different Systems of the Game."""
-        posSystem: System = self.m_world.system(SystemName.position(), PositionComponent, PositionProcessing)
         inputSystem: System = self.m_world.system(SystemName.input(), InputComponent, InputProcessing)
+        posSystem: System = self.m_world.system(SystemName.position(), PositionComponent, PositionProcessing)
         spriteSystem: System = self.m_world.system(SystemName.sprite(), SpriteComponent, SpriteProcessing)
-        inputSystem.link(posSystem)
-        inputSystem.link(spriteSystem)
+        spriteSystem.link(posSystem)
+
         charPropSystem: System = self.m_world.system(
             SystemName.characterProperties(),
             CharacterPropertiesComponent,
             CharacterPropertiesProcessing
         )
+
+        aiSystem: System = self.m_world.system(SystemName.ai(), AIComponent, AIProcessing)
+        aiSystem.link(posSystem)
+        aiSystem.link(spriteSystem)
+        aiSystem.link(charPropSystem)

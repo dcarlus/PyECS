@@ -9,22 +9,26 @@ class SystemProcessing:
         """Create a new SystemProcessing instance."""
         self.m_components = components
 
-    def pre(self, linkedSystems: {str, 'System'}) -> None:
-        """Prepare work before run."""
+    def onDelete(self, entity: Entity) -> None:
+        """Do something when an entity is removed."""
         return
 
-    def run(self, linkedSystems: {str, 'System'}) -> None:
-        """Perform the Components processing."""
-        return
+    def pre(self, linkedSystems: {str, 'System'}) -> [Entity]:
+        """Prepare work before run. Returns a list of Entity to be removed by the World."""
+        return []
 
-    def post(self, linkedSystems: {str, 'System'}) -> None:
-        """Do something after processing."""
-        return
+    def run(self, linkedSystems: {str, 'System'}) -> [Entity]:
+        """Perform the Components processing. Returns a list of Entity to be removed by the World."""
+        return []
+
+    def post(self, linkedSystems: {str, 'System'}) -> [Entity]:
+        """Do something after processing. Returns a list of Entity to be removed by the World."""
+        return []
 
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)
 
 class System(Generic[TConcreteComponent]):
-    """Base class for defining a System of the ecs architecture."""
+    """Base class for defining a System of the ECS architecture."""
 
     def __init__(
         self,
@@ -56,6 +60,7 @@ class System(Generic[TConcreteComponent]):
 
     def delete(self, entity: Entity) -> None:
         """Delete the component(s) attached to an Entity."""
+        self.m_processing.onDelete(entity)
         self.m_components.delete(entity)
 
     def link(self, linkedSystem) -> None:
@@ -75,7 +80,7 @@ class System(Generic[TConcreteComponent]):
     def componentFor(self, entity: Entity) -> Component:
         """Get the first Component found for the given entity."""
         try:
-            return next(c for c in self.components() if c.entity == entity)
+            return next(c for c in self.components() if c.entityValue == entity)
         except:
             return None
 
@@ -85,22 +90,22 @@ class System(Generic[TConcreteComponent]):
         listComponents: [Component] = self.m_components.allComponents()
 
         for component in listComponents:
-            if component.entity == entity:
+            if component.entityValue == entity:
                 foundComponents.append(component)
 
         return foundComponents
 
-    def preprocess(self) -> None:
-        """Run the Components preprocessing."""
-        self.m_processing.pre(self.m_linkedSystems)
+    def preprocess(self) -> [Entity]:
+        """Run the Components preprocessing. Returns a list of Entity to be removed by the World."""
+        return self.m_processing.pre(self.m_linkedSystems)
 
-    def process(self) -> None:
-        """Run the Components processing."""
-        self.m_processing.run(self.m_linkedSystems)
+    def process(self) -> [Entity]:
+        """Run the Components processing. Returns a list of Entity to be removed by the World."""
+        return self.m_processing.run(self.m_linkedSystems)
 
-    def postprocess(self) -> None:
-        """Run the Components postprocessing."""
-        self.m_processing.post(self.m_linkedSystems)
+    def postprocess(self) -> [Entity]:
+        """Run the Components postprocessing. Returns a list of Entity to be removed by the World."""
+        return self.m_processing.post(self.m_linkedSystems)
 
     @property
     def name(self):

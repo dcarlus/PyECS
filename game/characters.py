@@ -1,10 +1,11 @@
 from ecs.world import World
 from ecs.entities import Entity
 from ecs.systems import System
-from game.components.engine.positioncomponent import PositionComponent, Point
+from game.components.engine.positioncomponent import PositionComponent
 from game.components.engine.spritecomponent import SpriteComponent
 from game.components.engine.inputcomponent import InputComponent
 from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent
+from game.components.gameplay.aicomponent import AIComponent
 from game.appdata import SystemName
 
 
@@ -55,7 +56,7 @@ class Character:
 
 
 class Player(Character):
-    """Class for a Player that can be moved through inputs (keyboard, controller, ...)"""
+    """Class for a Player that can be moved through inputs (keyboard, controller, ...)."""
 
     def __init__(self, world: World, name: str = "Player"):
         """Create a new Player instance."""
@@ -70,5 +71,25 @@ class Player(Character):
 
     @property
     def inputComponent(self) -> InputComponent:
-        """Get the InpurComponent of the Player."""
+        """Get the InputComponent of the Player."""
         return self.m_inputComponent
+
+
+class Bot(Character):
+    """Class for a Bot that is controlled by the CPU."""
+
+    def __init__(self, world: World, name: str = "Bot"):
+        """Create a new Bot instance."""
+        super().__init__(world, name)
+        self.m_aiComponent: AIComponent = None
+        self.__createAIComponent(world)
+
+    def __createAIComponent(self, world) -> None:
+        """Create the AIComponent to control the Bot."""
+        aiSystem: System = world.system(SystemName.ai())
+        self.m_aiComponent = aiSystem.create(self.m_entity)
+
+    @property
+    def aiComponent(self) -> AIComponent:
+        """Get the AIComponent of the Bot."""
+        return self.m_aiComponent

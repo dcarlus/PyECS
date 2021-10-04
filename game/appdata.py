@@ -39,12 +39,12 @@ class SystemName:
         return 'Sprite'
 
     @staticmethod
-    def direction() -> str:
-        return 'Direction'
-
-    @staticmethod
     def characterProperties() -> str:
         return 'CharacterProperties'
+
+    @staticmethod
+    def ai() -> str:
+        return 'AI'
 
 
 class AnimationName:
