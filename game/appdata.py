@@ -27,10 +27,6 @@ class SystemName:
     """For naming Systems."""
 
     @staticmethod
-    def position() -> str:
-        return 'Position'
-
-    @staticmethod
     def input() -> str:
         return 'Input'
 
@@ -45,6 +41,10 @@ class SystemName:
     @staticmethod
     def ai() -> str:
         return 'AI'
+
+    @staticmethod
+    def rendering() -> str:
+        return 'Rendering'
 
 
 class AnimationName:

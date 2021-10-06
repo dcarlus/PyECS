@@ -62,7 +62,7 @@ class CharacterPropertiesProcessing(SystemProcessing):
         """Create a new CharacterPropertiesProcessing instance."""
         super().__init__(components)
 
-    def pre(self, linkedSystems: {str, 'System'}) -> [Entity]:
+    def run(self, linkedSystems: {str, 'System'}) -> [Entity]:
         """Prepare work before run."""
         # Tag the entity as to be deleted by the world.
         charPropsComponentsList: [CharacterPropertiesComponent] = self.m_components.allComponents()

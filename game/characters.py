@@ -1,9 +1,10 @@
 from ecs.world import World
 from ecs.entities import Entity
 from ecs.systems import System
-from game.components.engine.positioncomponent import PositionComponent
+from engine.graphics.geometry import Point
 from game.components.engine.spritecomponent import SpriteComponent
 from game.components.engine.inputcomponent import InputComponent
+from game.components.engine.renderingcomponent import RenderingComponent
 from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent
 from game.components.gameplay.aicomponent import AIComponent
 from game.appdata import SystemName
@@ -15,20 +16,20 @@ class Character:
     def __init__(self, world: World, name: str):
         """Create a new Character instance."""
         self.m_entity: Entity = world.createEntity()
-        self.m_positionComponent: PositionComponent = None
         self.m_spriteComponent: SpriteComponent = None
         self.m_propertiesComponent: CharacterPropertiesComponent = None
+        self.m_renderingComponent: RenderingComponent = None
         self.__createComponents(world)
         self.__setProperties(name)
 
     def __createComponents(self, world: World) -> None:
         """Set up the Entity of the Character."""
-        positionSystem: System = world.system(SystemName.position())
         spriteSystem: System = world.system(SystemName.sprite())
         propertiesSystem: System = world.system(SystemName.characterProperties())
-        self.m_positionComponent = positionSystem.create(self.m_entity)
+        renderingSystem: System = world.system(SystemName.rendering())
         self.m_spriteComponent = spriteSystem.create(self.m_entity)
         self.m_propertiesComponent = propertiesSystem.create(self.m_entity)
+        self.m_renderingComponent = renderingSystem.create(self.m_entity)
 
     def __setProperties(self, name: str):
         """Set up the Character's properties."""
@@ -40,11 +41,6 @@ class Character:
         return self.m_entity
 
     @property
-    def positionComponent(self) -> PositionComponent:
-        """Get the PositionComponent of the Character."""
-        return self.m_positionComponent
-
-    @property
     def spriteComponent(self) -> SpriteComponent:
         """Get the SpriteComponent of the Character."""
         return self.m_spriteComponent
@@ -53,6 +49,24 @@ class Character:
     def propertiesComponent(self) -> CharacterPropertiesComponent:
         """Get the CharacterPropertiesComponent of the Character."""
         return self.m_propertiesComponent
+
+    @property
+    def renderingComponent(self) -> RenderingComponent:
+        """Get the RenderingComponent of the Character."""
+        return self.m_renderingComponent
+
+    @property
+    def position(self) -> Point:
+        """Get the position of the Character."""
+        if self.m_spriteComponent.sprite.ready:
+            return self.m_spriteComponent.sprite.position
+        return Point()
+
+    @position.setter
+    def position(self, position: Point) -> None:
+        """Set the position of the Character."""
+        if self.m_spriteComponent.sprite.ready:
+            self.m_spriteComponent.sprite.position = position
 
 
 class Player(Character):

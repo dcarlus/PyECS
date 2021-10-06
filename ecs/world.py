@@ -55,13 +55,7 @@ class World:
         clearEntitiesList: [Entity] = []
 
         for name in self.m_systems:
-            clearEntitiesList.extend(self.m_systems[name].preprocess())
-
-        for name in self.m_systems:
-            clearEntitiesList.extend(self.m_systems[name].process())
-
-        for name in self.m_systems:
-            clearEntitiesList.extend(self.m_systems[name].postprocess())
+             clearEntitiesList.extend(self.m_systems[name].process())
 
         for entity in clearEntitiesList:
             self.delete(entity)

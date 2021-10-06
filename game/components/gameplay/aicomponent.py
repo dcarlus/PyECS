@@ -6,7 +6,6 @@ from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 from game.appdata import SystemName
 from engine.graphics.geometry import Point
-from game.components.engine.positioncomponent import PositionComponent
 from game.components.engine.spritecomponent import SpriteComponent
 from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent
 
@@ -36,8 +35,8 @@ class AIProcessing(SystemProcessing):
         """Create a new AIProcessing instance."""
         super().__init__(components)
 
-    def pre(self, linkedSystems: {str, System}) -> [Entity]:
-        """Prepare work before run."""
+    def run(self, linkedSystems: {str, System}) -> [Entity]:
+        """Perform the AIComponents processing."""
         aiComponentsList: [AIComponent] = self.m_components.allComponents()
         charPropsSystem: System = linkedSystems[SystemName.characterProperties()]
         botEntitiesList: [Entity] = []
@@ -63,32 +62,36 @@ class AIProcessing(SystemProcessing):
                     changeTarget = True
 
             if changeTarget:
-                ai.target = random.choice(botEntitiesList)
+                selectedEntity: Entity = random.choice(botEntitiesList)
+                ai.target = selectedEntity if selectedEntity is not entity else None
 
-        return []
 
-    def run(self, linkedSystems: {str, System}) -> [Entity]:
-        """Perform the AIComponents processing."""
+
+
         aiComponentsList: [AIComponent] = self.m_components.allComponents()
-        positionSystem: System = linkedSystems[SystemName.position()]
         spriteSystem: System = linkedSystems[SystemName.sprite()]
         charPropsSystem: System = linkedSystems[SystemName.characterProperties()]
 
         for component in aiComponentsList:
             entity: Entity = component.entityValue
-            position: PositionComponent = positionSystem.componentFor(entity)
             sprite: SpriteComponent = spriteSystem.componentFor(entity).sprite
             charProps: CharacterPropertiesComponent = charPropsSystem.componentFor(entity)
 
             targetEntity: Entity = component.target
-            targetPosition: PositionComponent = positionSystem.componentFor(targetEntity)
+
+            if targetEntity is None:
+                continue
+
             targetSprite: SpriteComponent = spriteSystem.componentFor(targetEntity).sprite
             targetCharProps: CharacterPropertiesComponent = charPropsSystem.componentFor(targetEntity)
 
             if not sprite.collides(targetSprite):
                 # Move towards the target.
-                position.x = position.x + (charProps.speed if position.x < targetPosition.x else -charProps.speed)
-                position.y = position.y + (charProps.speed if position.y < targetPosition.y else -charProps.speed)
+                shiftPosition: Point = Point()
+                shiftPosition.x = charProps.speed if sprite.position.x < targetSprite.position.x else -charProps.speed
+                shiftPosition.y = charProps.speed if sprite.position.y < targetSprite.position.y else -charProps.speed
+                sprite.position = sprite.position + shiftPosition
+                sprite.update()
             else:
                 # Attack the target.
                 targetCharProps.life = max(0, targetCharProps.life - charProps.attack)

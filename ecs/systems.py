@@ -1,4 +1,5 @@
 from termcolor import colored
+from typing import Any
 from ecs.components import Component, ComponentQuantity, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
 
 
@@ -9,21 +10,26 @@ class SystemProcessing:
         """Create a new SystemProcessing instance."""
         self.m_components = components
 
+    def setData(self, data: Any, setterName: str) -> None:
+        """Set data by calling the setter method by its name."""
+        setter: 'function' = getattr(self, setterName)
+        setter(data)
+
     def onDelete(self, entity: Entity) -> None:
         """Do something when an entity is removed."""
         return
 
-    def pre(self, linkedSystems: {str, 'System'}) -> [Entity]:
-        """Prepare work before run. Returns a list of Entity to be removed by the World."""
-        return []
+    # def pre(self, linkedSystems: {str, 'System'}) -> [Entity]:
+    #     """Prepare work before run. Returns a list of Entity to be removed by the World."""
+    #     return []
 
     def run(self, linkedSystems: {str, 'System'}) -> [Entity]:
         """Perform the Components processing. Returns a list of Entity to be removed by the World."""
         return []
 
-    def post(self, linkedSystems: {str, 'System'}) -> [Entity]:
-        """Do something after processing. Returns a list of Entity to be removed by the World."""
-        return []
+    # def post(self, linkedSystems: {str, 'System'}) -> [Entity]:
+    #     """Do something after processing. Returns a list of Entity to be removed by the World."""
+    #     return []
 
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)
 
@@ -95,17 +101,13 @@ class System(Generic[TConcreteComponent]):
 
         return foundComponents
 
-    def preprocess(self) -> [Entity]:
-        """Run the Components preprocessing. Returns a list of Entity to be removed by the World."""
-        return self.m_processing.pre(self.m_linkedSystems)
-
     def process(self) -> [Entity]:
         """Run the Components processing. Returns a list of Entity to be removed by the World."""
         return self.m_processing.run(self.m_linkedSystems)
 
-    def postprocess(self) -> [Entity]:
-        """Run the Components postprocessing. Returns a list of Entity to be removed by the World."""
-        return self.m_processing.post(self.m_linkedSystems)
+    def setProcessingData(self, data: Any, setterName: str) -> None:
+        """Set data to the system processing."""
+        self.m_processing.setData(data, setterName)
 
     @property
     def name(self):

@@ -4,8 +4,7 @@ from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 from engine.graphics.direction import Direction
 from engine.graphics.geometry import Point
-from .positioncomponent import PositionComponent
-from .spritecomponent import SpriteComponent
+from .spritecomponent import SpriteComponent, Sprite
 from ..gameplay.charastatscomponent import CharacterPropertiesComponent
 
 
@@ -22,13 +21,11 @@ class MoveCharacterAction(Action):
 
     def __init__(
         self,
-        positionComponent: PositionComponent,
         spriteComponent: SpriteComponent,
         statsComponent: CharacterPropertiesComponent
     ):
         """Create a new MoveCharacterAction instance."""
         super().__init__()
-        self.m_positionComponent: PositionComponent = positionComponent
         self.m_spriteComponent: SpriteComponent = spriteComponent
         self.m_statsComponent: statsComponent = statsComponent
         self.m_direction: Direction = Direction.UP
@@ -55,14 +52,11 @@ class MoveCharacterAction(Action):
 
     def triggered(self) -> None:
         """What is done by the Action."""
-        currentPosition: Point = Point(self.m_positionComponent.position.x, self.m_positionComponent.position.y)
+        sprite: Sprite = self.m_spriteComponent.sprite
         shiftCoords: Point = self.m_moveShift.multiplied(self.m_statsComponent.speed)
-        currentPosition = currentPosition + shiftCoords
-        self.m_positionComponent.position.x = currentPosition.x
-        self.m_positionComponent.position.y = currentPosition.y
-        self.m_spriteComponent.sprite.position = self.m_positionComponent.position
-        self.m_spriteComponent.sprite.changeDirection(self.m_direction)
-        self.m_spriteComponent.sprite.update()
+        sprite.position = sprite.position + shiftCoords
+        sprite.changeDirection(self.m_direction)
+        sprite.update()
 
 
 class InputComponent(Component):
