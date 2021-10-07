@@ -68,7 +68,7 @@ class EntityFactory:
 
     def __init__(self) -> None:
         """Create a new EntityFactory instance. There should be only one EntityFactory in a application."""
-        self.m_entities = []
+        self.m_entities: [int] = []
 
     def create(self) -> Entity:
         """Create a new Entity instance and store it in the EntityFactory."""
@@ -84,6 +84,10 @@ class EntityFactory:
             Entity.Free(entity)
         except:
             return
+
+    def has(self, entity: Entity) -> bool:
+        """Check if the given Entity exists."""
+        return entity.value in self.m_entities
 
     def debug(self) -> None:
         """Show the content of the EntityFactory in a terminal."""

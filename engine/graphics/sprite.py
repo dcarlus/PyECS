@@ -58,6 +58,8 @@ class Animation:
 class Sprite(pygame.sprite.Sprite):
     """Convenient way to use PyGame sprites."""
 
+    SpriteSheets: {str, pygame.image} = {}
+
     def __init__(
             self,
             spriteSheet: str = '',
@@ -70,7 +72,10 @@ class Sprite(pygame.sprite.Sprite):
         super().__init__()
 
         if len(spriteSheet):
-            self.m_sheet: pygame.image = pygame.image.load(spriteSheet)
+            if spriteSheet not in Sprite.SpriteSheets:
+                Sprite.SpriteSheets[spriteSheet] = pygame.image.load(spriteSheet)
+
+            self.m_sheet: pygame.image = Sprite.SpriteSheets[spriteSheet]
             self.m_spriteWidth: int = max(0, width)
             self.m_spriteHeight: int = max(0, height)
             self.m_colorKey: [] = colorKey

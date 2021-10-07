@@ -19,19 +19,18 @@ class SystemProcessing:
         """Do something when an entity is removed."""
         return
 
-    # def pre(self, linkedSystems: {str, 'System'}) -> [Entity]:
-    #     """Prepare work before run. Returns a list of Entity to be removed by the World."""
-    #     return []
-
-    def run(self, linkedSystems: {str, 'System'}) -> [Entity]:
+    def run(
+        self,
+        linkedSystems: {str, 'System'},
+        fromIndex: int,
+        toIndex: int
+    ) -> [Entity]:
         """Perform the Components processing. Returns a list of Entity to be removed by the World."""
         return []
 
-    # def post(self, linkedSystems: {str, 'System'}) -> [Entity]:
-    #     """Do something after processing. Returns a list of Entity to be removed by the World."""
-    #     return []
 
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)
+
 
 class System(Generic[TConcreteComponent]):
     """Base class for defining a System of the ECS architecture."""
@@ -48,6 +47,7 @@ class System(Generic[TConcreteComponent]):
         self.m_linkedSystems: {str, System} = {}
         self.m_components = ComponentFactory(componentClass)
         self.m_processing = processingClass(self.m_components)
+        self.m_multithreadable: bool = True
 
     def create(self, entity: Entity) -> TConcreteComponent:
         """If the Entity has no Component of the wanted type, it creates a new Component and attach it to the provided
@@ -70,14 +70,21 @@ class System(Generic[TConcreteComponent]):
         self.m_components.delete(entity)
 
     def link(self, linkedSystem) -> None:
+        """Link another System to the current one."""
         name: str = linkedSystem.name
         self.m_linkedSystems[name] = linkedSystem
 
     def unlink(self, system):
+        """Unlink a System from the current one."""
         name: str = system.name
 
-        if self.m_linkedSystems.__contains__(name):
+        if name in self.m_linkedSystems:
             self.m_linkedSystems.pop(name)
+
+    @property
+    def amountComponents(self) -> int:
+        """Get the amount of Components managed by the current System."""
+        return self.m_components.countComponents()
 
     def components(self) -> [Component]:
         """Get all the Components managed by the current System."""
@@ -101,17 +108,31 @@ class System(Generic[TConcreteComponent]):
 
         return foundComponents
 
-    def process(self) -> [Entity]:
+    def process(self, fromIndex: int, toIndex: int) -> [Entity]:
         """Run the Components processing. Returns a list of Entity to be removed by the World."""
-        return self.m_processing.run(self.m_linkedSystems)
+        return self.m_processing.run(self.m_linkedSystems, fromIndex, toIndex)
 
     def setProcessingData(self, data: Any, setterName: str) -> None:
         """Set data to the system processing."""
         self.m_processing.setData(data, setterName)
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Get the name of the System."""
+        return self.m_name
+
+    @property
+    def multithreadable(self) -> bool:
+        """Used to know if the system can be multithreaded or not."""
+        return self.m_multithreadable
+
+    @multithreadable.setter
+    def multithreadable(self, flag: bool) -> None:
+        """Used to set if the system can be multithreaded or not."""
+        self.m_multithreadable = flag
+
+    def __str__(self) -> str:
+        """Convert the System to string."""
         return self.m_name
 
     def debug(self) -> None:

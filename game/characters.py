@@ -18,7 +18,6 @@ class Character:
         self.m_entity: Entity = world.createEntity()
         self.m_spriteComponent: SpriteComponent = None
         self.m_propertiesComponent: CharacterPropertiesComponent = None
-        self.m_renderingComponent: RenderingComponent = None
         self.__createComponents(world)
         self.__setProperties(name)
 
@@ -26,10 +25,8 @@ class Character:
         """Set up the Entity of the Character."""
         spriteSystem: System = world.system(SystemName.sprite())
         propertiesSystem: System = world.system(SystemName.characterProperties())
-        renderingSystem: System = world.system(SystemName.rendering())
         self.m_spriteComponent = spriteSystem.create(self.m_entity)
         self.m_propertiesComponent = propertiesSystem.create(self.m_entity)
-        self.m_renderingComponent = renderingSystem.create(self.m_entity)
 
     def __setProperties(self, name: str):
         """Set up the Character's properties."""
@@ -49,11 +46,6 @@ class Character:
     def propertiesComponent(self) -> CharacterPropertiesComponent:
         """Get the CharacterPropertiesComponent of the Character."""
         return self.m_propertiesComponent
-
-    @property
-    def renderingComponent(self) -> RenderingComponent:
-        """Get the RenderingComponent of the Character."""
-        return self.m_renderingComponent
 
     @property
     def position(self) -> Point:

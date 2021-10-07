@@ -43,8 +43,12 @@ class SpriteProcessing(SystemProcessing):
             spriteComponent: SpriteComponent = self.m_components.components(entity)[0]
             self.m_spriteGroup.remove(spriteComponent.sprite)
 
-    def run(self, linkedSystems: {str, System}) -> [Entity]:
+    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> [Entity]:
         """Perform the Components processing."""
+        self.process()
+        return []
+
+    def process(self) -> None:
         if self.m_spriteGroup is None:
             return []
 
@@ -57,6 +61,3 @@ class SpriteProcessing(SystemProcessing):
                 AppData.wantAccess()
                 self.m_spriteGroup.add(sprite)
                 AppData.releaseAccess()
-
-        return []
-

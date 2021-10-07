@@ -42,6 +42,7 @@ class Component:
 
 TConcreteComponent = TypeVar('TConcreteComponent', bound=Component)
 
+
 class ComponentFactory(Generic[TConcreteComponent]):
     """Factory to generate and destroy Component instances."""
 
@@ -56,6 +57,10 @@ class ComponentFactory(Generic[TConcreteComponent]):
         newComponent: TConcreteComponent = self.m_memberClass(entity)
         self.m_components.append(newComponent)
         return newComponent
+
+    def countComponents(self) -> int:
+        """Get the amount of Components for all Entities."""
+        return len(self.m_components)
 
     def allComponents(self):
         """Get all the Components from all Entities."""

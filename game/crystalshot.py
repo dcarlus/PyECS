@@ -2,6 +2,7 @@ import random
 
 import pygame
 from ecs.systems import System
+from ecs.entities import Entity
 from engine.components.inputcomponent import InputComponent, InputProcessing, MoveCharacterAction
 from engine.components.spritecomponent import SpriteComponent, SpriteProcessing
 from engine.components.renderingcomponent import RenderingComponent, RenderingProcessing
@@ -10,7 +11,7 @@ from engine.components.gameplay.aicomponent import AIComponent, AIProcessing
 from engine.graphics.sprite import Sprite, Direction
 from engine.geometry import Point
 from engine.game import Game
-from game.appdata import SystemName, AnimationName
+from game.appdata import SystemName, AnimationName, SystemGroupName
 from characters import Player, Bot
 
 
@@ -20,14 +21,19 @@ class CrystalShot(Game):
     def __init__(self, framerate: int) -> None:
         """Initialize the Game."""
         super().__init__()
+        self.m_spriteGroup: pygame.sprite.Group = pygame.sprite.Group()
         pygame.key.set_repeat(int((1./framerate) * 1000))
         self.__setupWorld()
 
     def __setupWorld(self) -> None:
         """Setup the game ECS World."""
         self.__createSystems()
-        self.__generateBots(128)
+        self.__generateBots(500)
         # self.__generatePlayer()
+
+        renderEntity: Entity = self.m_world.createEntity()
+        renderingSystem: System = self.m_world.system(SystemName.rendering())
+        renderingSystem.create(renderEntity)
 
     def __generateBots(self, count: int) -> None:
         """Generate the Bots of the Game."""
@@ -107,11 +113,9 @@ class CrystalShot(Game):
 
     def __createSystems(self) -> None:
         """Create the different Systems of the Game."""
-        spriteGroup: pygame.sprite.Group = pygame.sprite.Group()
-
         inputSystem: System = self.m_world.system(SystemName.input(), InputComponent, InputProcessing)
         spriteSystem: System = self.m_world.system(SystemName.sprite(), SpriteComponent, SpriteProcessing)
-        spriteSystem.setProcessingData(spriteGroup, 'setSpriteGroup')
+        spriteSystem.setProcessingData(self.m_spriteGroup, 'setSpriteGroup')
 
         charPropSystem: System = self.m_world.system(
             SystemName.characterProperties(),
@@ -124,4 +128,9 @@ class CrystalShot(Game):
         aiSystem.link(charPropSystem)
 
         renderingSystem: System = self.m_world.system(SystemName.rendering(), RenderingComponent, RenderingProcessing)
-        renderingSystem.setProcessingData(spriteGroup, 'setSpriteGroup')
+        renderingSystem.multithreadable = False
+        renderingSystem.setProcessingData(self.m_spriteGroup, 'setSpriteGroup')
+
+        self.m_world.addJob(SystemGroupName.prepare(), [SystemName.input(), SystemName.sprite(), SystemName.characterProperties()], threadCount=8)
+        self.m_world.addJob(SystemGroupName.airuns(), [SystemName.ai()], threadCount=8)
+        self.m_world.addJob(SystemGroupName.render(), [SystemName.rendering()], threadCount=1)

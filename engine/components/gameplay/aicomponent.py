@@ -1,5 +1,4 @@
 import random
-
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
@@ -34,14 +33,15 @@ class AIProcessing(SystemProcessing):
         """Create a new AIProcessing instance."""
         super().__init__(components)
 
-    def selectTarget(self, linkedSystems: {str, System}) -> None:
+    def selectTarget(self, linkedSystems: {str, System}, fromIndex: int, toIndex: int) -> None:
         """Give each character a target to attack."""
         aiComponentsList: [AIComponent] = self.m_components.allComponents()
         charPropsSystem: System = linkedSystems[SystemName.characterProperties()]
         botEntitiesList: [Entity] = []
 
         # List all the entities bearing an AI component and a Character Properties component.
-        for component in aiComponentsList:
+        for index in range(fromIndex, toIndex):
+            component: Component = aiComponentsList[index]
             entity: Entity = component.entityValue
             charPropsSystem: [System] = linkedSystems[SystemName.characterProperties()]
 
@@ -49,7 +49,8 @@ class AIProcessing(SystemProcessing):
                 botEntitiesList.append(component.entityValue)
 
         # Entities with a CharacterPropertiesComponent, it should be good to fight against them!
-        for ai in aiComponentsList:
+        for index in range(fromIndex, toIndex):
+            ai: Component = aiComponentsList[index]
             changeTarget: bool = False
 
             if ai.target is None:
@@ -64,13 +65,14 @@ class AIProcessing(SystemProcessing):
                 selectedEntity: Entity = random.choice(botEntitiesList)
                 ai.target = selectedEntity if selectedEntity is not entity else None
 
-    def processAI(self, linkedSystems: {str, System}) -> None:
+    def processAI(self, linkedSystems: {str, System}, fromIndex: int, toIndex: int) -> None:
         """Process the AI itself."""
         aiComponentsList: [AIComponent] = self.m_components.allComponents()
         spriteSystem: System = linkedSystems[SystemName.sprite()]
         charPropsSystem: System = linkedSystems[SystemName.characterProperties()]
 
-        for component in aiComponentsList:
+        for index in range(fromIndex, toIndex):
+            component: Component = aiComponentsList[index]
             entity: Entity = component.entityValue
             sprite: SpriteComponent = spriteSystem.componentFor(entity).sprite
             charProps: CharacterPropertiesComponent = charPropsSystem.componentFor(entity)
@@ -94,10 +96,10 @@ class AIProcessing(SystemProcessing):
                 # Attack the target.
                 targetCharProps.life = max(0, targetCharProps.life - charProps.attack)
 
-    def run(self, linkedSystems: {str, System}) -> [Entity]:
-        """Perform the AIComponents processing."""
-        self.selectTarget(linkedSystems)
-        self.processAI(linkedSystems)
+    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> [Entity]:
+        """Perform the Components processing. Returns a list of Entity to be removed by the World."""
+        self.selectTarget(linkedSystems, fromIndex, toIndex)
+        self.processAI(linkedSystems, fromIndex, toIndex)
         return []
 
 

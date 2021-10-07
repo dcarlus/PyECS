@@ -100,15 +100,18 @@ class InputProcessing(SystemProcessing):
         """Create a new InputProcessing instance."""
         super().__init__(components)
 
-    def run(self, linkedSystems: {str, System}) -> [Entity]:
+    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> [Entity]:
         """Perform the Components processing."""
+        self.process(fromIndex, toIndex)
+        return []
+
+    def process(self, fromIndex: int, toIndex: int):
+        """Process the inputs."""
         inputComponentsList: [Component] = self.m_components.allComponents()
 
-        for inputComponent in inputComponentsList:
-            entity: Entity = inputComponent.entityValue
+        for index in range(fromIndex, toIndex):
+            inputComponent: Component = inputComponentsList[index]
             InputProcessing.processKeys(inputComponent)
-
-        return []
 
     @staticmethod
     def processKeys(

@@ -47,6 +47,21 @@ class SystemName:
         return 'Rendering'
 
 
+class SystemGroupName:
+    """For naming system groups."""
+
+    @staticmethod
+    def prepare() -> str:
+        return 'Prepare'
+
+    @staticmethod
+    def airuns() -> str:
+        return 'AIRuns'
+
+    @staticmethod
+    def render() -> str:
+        return 'Render'
+
 class AnimationName:
     """For naming Animations of Sprites."""
 

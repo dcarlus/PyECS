@@ -62,16 +62,18 @@ class CharacterPropertiesProcessing(SystemProcessing):
         """Create a new CharacterPropertiesProcessing instance."""
         super().__init__(components)
 
-    def run(self, linkedSystems: {str, 'System'}) -> [Entity]:
-        """Prepare work before run."""
-        # Tag the entity as to be deleted by the world.
-        charPropsComponentsList: [CharacterPropertiesComponent] = self.m_components.allComponents()
+    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> [Entity]:
+        """Perform the CharacterPropertiesProcessing processing."""
+        return self.filterEntities(fromIndex, toIndex)
 
+    def filterEntities(self,  fromIndex: int, toIndex: int) -> [Entity]:
+        """Filter Entities of dead Characters."""
+        charPropsComponentsList: [CharacterPropertiesComponent] = self.m_components.allComponents()
         entitiesToRemove: [Entity] = []
 
-        for component in charPropsComponentsList:
+        for index in range(fromIndex, toIndex):
+            component: Component = charPropsComponentsList[index]
             if component.life == 0:
                 entitiesToRemove.append(component.entity)
 
         return entitiesToRemove
-
