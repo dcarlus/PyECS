@@ -2,10 +2,10 @@ import pygame
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
-from engine.graphics.direction import Direction
-from engine.graphics.geometry import Point
+import engine.direction
+from engine.geometry import Point
 from .spritecomponent import SpriteComponent, Sprite
-from ..gameplay.charastatscomponent import CharacterPropertiesComponent
+from .gameplay.charastatscomponent import CharacterPropertiesComponent
 
 
 class Action:
@@ -28,15 +28,15 @@ class MoveCharacterAction(Action):
         super().__init__()
         self.m_spriteComponent: SpriteComponent = spriteComponent
         self.m_statsComponent: statsComponent = statsComponent
-        self.m_direction: Direction = Direction.UP
+        self.m_direction: engine.direction.Direction = engine.direction.Direction.UP
         self.m_moveShift: Point = Point()
 
     @property
-    def direction(self) -> Direction:
+    def direction(self) -> engine.direction.Direction:
         """Get the direction of the move."""
         return self.m_direction
 
-    def setDirection(self, direction: Direction) -> 'MoveCharacterAction':
+    def setDirection(self, direction: engine.direction.Direction) -> 'MoveCharacterAction':
         """Set the direction of the move."""
         self.m_direction = direction
         return self

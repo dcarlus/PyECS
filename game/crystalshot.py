@@ -2,13 +2,13 @@ import random
 
 import pygame
 from ecs.systems import System
-from game.components.engine.inputcomponent import InputComponent, InputProcessing, MoveCharacterAction
-from game.components.engine.spritecomponent import SpriteComponent, SpriteProcessing
-from game.components.engine.renderingcomponent import RenderingComponent, RenderingProcessing
-from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent, CharacterPropertiesProcessing
-from game.components.gameplay.aicomponent import AIComponent, AIProcessing
+from engine.components.inputcomponent import InputComponent, InputProcessing, MoveCharacterAction
+from engine.components.spritecomponent import SpriteComponent, SpriteProcessing
+from engine.components.renderingcomponent import RenderingComponent, RenderingProcessing
+from engine.components.gameplay.charastatscomponent import CharacterPropertiesComponent, CharacterPropertiesProcessing
+from engine.components.gameplay.aicomponent import AIComponent, AIProcessing
 from engine.graphics.sprite import Sprite, Direction
-from engine.graphics.geometry import Point
+from engine.geometry import Point
 from engine.game import Game
 from game.appdata import SystemName, AnimationName
 from characters import Player, Bot
@@ -108,7 +108,6 @@ class CrystalShot(Game):
     def __createSystems(self) -> None:
         """Create the different Systems of the Game."""
         spriteGroup: pygame.sprite.Group = pygame.sprite.Group()
-
 
         inputSystem: System = self.m_world.system(SystemName.input(), InputComponent, InputProcessing)
         spriteSystem: System = self.m_world.system(SystemName.sprite(), SpriteComponent, SpriteProcessing)

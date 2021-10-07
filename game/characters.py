@@ -1,12 +1,12 @@
 from ecs.world import World
 from ecs.entities import Entity
 from ecs.systems import System
-from engine.graphics.geometry import Point
-from game.components.engine.spritecomponent import SpriteComponent
-from game.components.engine.inputcomponent import InputComponent
-from game.components.engine.renderingcomponent import RenderingComponent
-from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent
-from game.components.gameplay.aicomponent import AIComponent
+from engine.geometry import Point
+from engine.components.spritecomponent import SpriteComponent
+from engine.components.inputcomponent import InputComponent
+from engine.components.renderingcomponent import RenderingComponent
+from engine.components.gameplay.charastatscomponent import CharacterPropertiesComponent
+from engine.components.gameplay.aicomponent import AIComponent
 from game.appdata import SystemName
 
 

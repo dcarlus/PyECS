@@ -1,13 +1,12 @@
 import random
 
-import pygame
 from ecs.components import Component, ComponentFactory
 from ecs.entities import Entity
 from ecs.systems import SystemProcessing, System
 from game.appdata import SystemName
-from engine.graphics.geometry import Point
-from game.components.engine.spritecomponent import SpriteComponent
-from game.components.gameplay.charastatscomponent import CharacterPropertiesComponent
+from engine.geometry import Point
+from ..spritecomponent import SpriteComponent
+from .charastatscomponent import CharacterPropertiesComponent
 
 class AIComponent(Component):
     """Component for making Characters act by themselves."""
@@ -35,8 +34,8 @@ class AIProcessing(SystemProcessing):
         """Create a new AIProcessing instance."""
         super().__init__(components)
 
-    def run(self, linkedSystems: {str, System}) -> [Entity]:
-        """Perform the AIComponents processing."""
+    def selectTarget(self, linkedSystems: {str, System}) -> None:
+        """Give each character a target to attack."""
         aiComponentsList: [AIComponent] = self.m_components.allComponents()
         charPropsSystem: System = linkedSystems[SystemName.characterProperties()]
         botEntitiesList: [Entity] = []
@@ -65,9 +64,8 @@ class AIProcessing(SystemProcessing):
                 selectedEntity: Entity = random.choice(botEntitiesList)
                 ai.target = selectedEntity if selectedEntity is not entity else None
 
-
-
-
+    def processAI(self, linkedSystems: {str, System}) -> None:
+        """Process the AI itself."""
         aiComponentsList: [AIComponent] = self.m_components.allComponents()
         spriteSystem: System = linkedSystems[SystemName.sprite()]
         charPropsSystem: System = linkedSystems[SystemName.characterProperties()]
@@ -96,6 +94,10 @@ class AIProcessing(SystemProcessing):
                 # Attack the target.
                 targetCharProps.life = max(0, targetCharProps.life - charProps.attack)
 
+    def run(self, linkedSystems: {str, System}) -> [Entity]:
+        """Perform the AIComponents processing."""
+        self.selectTarget(linkedSystems)
+        self.processAI(linkedSystems)
         return []
 
 

@@ -1,6 +1,6 @@
 import pygame
-from .direction import Direction
-from .geometry import Point
+from engine.direction import Direction
+from engine.geometry import Point
 
 
 class Animation:
