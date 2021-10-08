@@ -10,6 +10,7 @@ class SystemProcessing:
     def __init__(self, components: ComponentFactory):
         """Create a new SystemProcessing instance."""
         self.m_components = components
+        self.m_dropEntities: [Entity] = []
 
     def setData(self, data: Any, setterName: str) -> None:
         """Set data by calling the setter method by its name."""
@@ -26,9 +27,14 @@ class SystemProcessing:
         linkedSystems: {str, 'System'},
         fromIndex: int,
         toIndex: int
-    ) -> [Entity]:
+    ) -> None:
         """Perform the Components processing. Returns a list of Entity to be removed by the World."""
         pass
+
+    @property
+    def dropEntities(self) -> None:
+        """Get the entities to be dropped."""
+        return self.m_dropEntities
 
 
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)

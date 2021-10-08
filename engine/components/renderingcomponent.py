@@ -24,12 +24,7 @@ class RenderingProcessing(SystemProcessing):
         """Set the group to which sprites are added."""
         self.m_spriteGroup = group
 
-    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> [Entity]:
+    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> None:
         """Perform the Components processing."""
-        self.process()
-        return []
-
-    def process(self) -> None:
-        """Process the Components."""
         self.m_spriteGroup.update()
         self.m_spriteGroup.draw(AppData.window().surface)

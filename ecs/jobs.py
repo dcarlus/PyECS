@@ -3,9 +3,6 @@ import threading
 from ecs.entities import Entity
 from ecs.systems import System
 
-from game.appdata import AppData
-import time
-
 class ThreadJob(threading.Thread):
     """A thread for running Job."""
 
@@ -51,12 +48,8 @@ class ThreadJob(threading.Thread):
         for system in self.m_fromToComponents:
             fromIndex: int = self.m_fromToComponents[system][0]
             toIndex: int = self.m_fromToComponents[system][1]
-
-            # AppData.wantAccess()
-            # print('Work from {} to {} on {}'.format(fromIndex, toIndex, system))
-            # AppData.releaseAccess()
-
-            self.m_dropEntities.extend(system.process(fromIndex, toIndex))
+            system.process(fromIndex, toIndex)
+            self.m_dropEntities.extend(system.processing.dropEntities)
 
     @property
     def dropEntities(self) -> [Entity]:
@@ -80,9 +73,6 @@ class Job:
 
     def execute(self) -> None:
         """Execute the Job tasks."""
-
-        start_time = time.time()
-
         self.m_dropEntities.clear()
         self.__defineThreadsCharge()
 
@@ -96,8 +86,6 @@ class Job:
         # Fill the drop entities list.
         for thread in self.m_threads:
             self.m_dropEntities.extend(thread.dropEntities)
-
-        # print("--- {} {} seconds ---".format(self.name, time.time() - start_time))
 
     def stop(self) -> None:
         """Stop the Job and all its threads."""

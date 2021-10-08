@@ -95,10 +95,9 @@ class AIProcessing(SystemProcessing):
                 # Attack the target.
                 targetCharProps.life = max(0, targetCharProps.life - charProps.attack)
 
-    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> [Entity]:
+    def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> None:
         """Perform the Components processing. Returns a list of Entity to be removed by the World."""
         self.selectTarget(linkedSystems, fromIndex, toIndex)
         self.processAI(linkedSystems, fromIndex, toIndex)
-        return []
 
 

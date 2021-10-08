@@ -66,14 +66,11 @@ class CharacterPropertiesProcessing(SystemProcessing):
         """Perform the CharacterPropertiesProcessing processing."""
         return self.filterEntities(fromIndex, toIndex)
 
-    def filterEntities(self,  fromIndex: int, toIndex: int) -> [Entity]:
+    def filterEntities(self,  fromIndex: int, toIndex: int) -> None:
         """Filter Entities of dead Characters."""
         charPropsComponentsList: [CharacterPropertiesComponent] = self.m_components.allComponents()
-        entitiesToRemove: [Entity] = []
 
         for index in range(fromIndex, toIndex):
             component: Component = charPropsComponentsList[index]
             if component.life == 0:
-                entitiesToRemove.append(component.entity)
-
-        return entitiesToRemove
+                self.m_dropEntities.append(component.entity)
