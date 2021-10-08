@@ -28,8 +28,8 @@ class CrystalShot(Game):
     def __setupWorld(self) -> None:
         """Setup the game ECS World."""
         self.__createSystems()
-        self.__generateBots(500)
-        # self.__generatePlayer()
+        self.__generateBots(300)
+        self.__generatePlayer()
 
         renderEntity: Entity = self.m_world.createEntity()
         renderingSystem: System = self.m_world.system(SystemName.rendering())
