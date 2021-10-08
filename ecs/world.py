@@ -70,6 +70,12 @@ class World:
             for entity in clearEntitiesList:
                 self.delete(entity)
 
+    def stop(self) -> None:
+        """Stop all the Jobs."""
+        for jobName in self.m_jobs:
+            job: Job = self.m_jobs[jobName]
+            job.stop()
+
     def debug(self) -> None:
         """Debug the World instance."""
         self.m_entities.debug()

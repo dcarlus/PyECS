@@ -40,8 +40,10 @@ class SpriteProcessing(SystemProcessing):
     def onDelete(self, entity: Entity) -> None:
         """Do something when an entity is removed."""
         if self.m_spriteGroup is not None:
-            spriteComponent: SpriteComponent = self.m_components.components(entity)[0]
-            self.m_spriteGroup.remove(spriteComponent.sprite)
+            components: [Component] = self.m_components.components(entity)
+            if len(components) > 0:
+                spriteComponent: SpriteComponent = components[0]
+                self.m_spriteGroup.remove(spriteComponent.sprite)
 
     def run(self, linkedSystems: {str, 'System'}, fromIndex: int, toIndex: int) -> None:
         """Perform the Components processing."""

@@ -15,6 +15,7 @@ if __name__ == '__main__':
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                csGame.world.stop()
                 running = False
             elif event.type == pygame.VIDEORESIZE:
                 AppData.window().resize(event.size[0], event.size[1])
