@@ -115,7 +115,7 @@ class CrystalShot(Game):
         """Create the different Systems of the Game."""
         inputSystem: System = self.m_world.system(SystemName.input(), InputComponent, InputProcessing)
         spriteSystem: System = self.m_world.system(SystemName.sprite(), SpriteComponent, SpriteProcessing)
-        spriteSystem.setProcessingData(self.m_spriteGroup, 'setSpriteGroup')
+        spriteSystem.processing.setSpriteGroup(self.m_spriteGroup)
 
         charPropSystem: System = self.m_world.system(
             SystemName.characterProperties(),
@@ -129,8 +129,8 @@ class CrystalShot(Game):
 
         renderingSystem: System = self.m_world.system(SystemName.rendering(), RenderingComponent, RenderingProcessing)
         renderingSystem.multithreadable = False
-        renderingSystem.setProcessingData(self.m_spriteGroup, 'setSpriteGroup')
+        renderingSystem.processing.setSpriteGroup(self.m_spriteGroup)
 
-        self.m_world.addJob(SystemGroupName.prepare(), [SystemName.input(), SystemName.sprite(), SystemName.characterProperties()], threadCount=8)
-        self.m_world.addJob(SystemGroupName.airuns(), [SystemName.ai()], threadCount=8)
+        self.m_world.addJob(SystemGroupName.prepare(), [SystemName.input(), SystemName.sprite(), SystemName.characterProperties()], threadCount=6)
+        self.m_world.addJob(SystemGroupName.airuns(), [SystemName.ai()], threadCount=6)
         self.m_world.addJob(SystemGroupName.render(), [SystemName.rendering()], threadCount=1)

@@ -40,8 +40,7 @@ class AIProcessing(SystemProcessing):
         botEntitiesList: [Entity] = []
 
         # List all the entities bearing an AI component and a Character Properties component.
-        for index in range(fromIndex, toIndex):
-            component: Component = aiComponentsList[index]
+        for component in aiComponentsList:
             entity: Entity = component.entityValue
             charPropsSystem: [System] = linkedSystems[SystemName.characterProperties()]
 

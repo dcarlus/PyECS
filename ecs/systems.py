@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from termcolor import colored
 from typing import Any
 from ecs.components import Component, ComponentQuantity, ComponentFactory, Entity, Generic, Type, TypeVar, TConcreteComponent
@@ -19,6 +20,7 @@ class SystemProcessing:
         """Do something when an entity is removed."""
         return
 
+    @abstractmethod
     def run(
         self,
         linkedSystems: {str, 'System'},
@@ -26,7 +28,7 @@ class SystemProcessing:
         toIndex: int
     ) -> [Entity]:
         """Perform the Components processing. Returns a list of Entity to be removed by the World."""
-        return []
+        pass
 
 
 TConcreteSystemProcessing = TypeVar('TConcreteSystemProcessing', bound=SystemProcessing)
@@ -130,6 +132,11 @@ class System(Generic[TConcreteComponent]):
     def multithreadable(self, flag: bool) -> None:
         """Used to set if the system can be multithreaded or not."""
         self.m_multithreadable = flag
+
+    @property
+    def processing(self) -> SystemProcessing:
+        """Get the SystemProcessing instance of the current System."""
+        return self.m_processing
 
     def __str__(self) -> str:
         """Convert the System to string."""
